@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel - YouTube</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #0f0f0f; --text: #f1f1f1; --text-sub: #aaa; --hover: #272727; --border: #303030; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* --- Header --- */
+        header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 56px; position: fixed; width: 100%; background: var(--bg); z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .icon-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { background: var(--hover); }
+        .logo { display: flex; align-items: center; font-size: 20px; font-weight: bold; letter-spacing: -1px; color: var(--text); text-decoration: none; }
+        .logo i { color: #ff0000; font-size: 28px; margin-right: 4px; }
+        .logo span.country { font-size: 10px; color: var(--text-sub); align-self: flex-start; margin-top: 4px; margin-left: 2px; }
+
+        .header-center { display: flex; align-items: center; flex: 1; max-width: 700px; margin: 0 20px; gap: 16px; }
+        .search-box { display: flex; flex: 1; background: #121212; border: 1px solid var(--border); border-radius: 40px; height: 40px; overflow: hidden; position: relative; }
+        .search-box input { flex: 1; background: transparent; border: none; color: var(--text); padding: 0 16px; outline: none; }
+        .search-box button { background: #222; border: none; border-left: 1px solid var(--border); padding: 0 20px; color: var(--text); cursor: pointer; }
+        
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; margin-left: 8px; }
+
+        /* --- Main Layout & Overlay --- */
+        .main-container { display: flex; margin-top: 56px; height: calc(100vh - 56px); position: relative; }
+        
+        .overlay { position: fixed; top: 56px; left: 0; width: 100%; height: calc(100% - 56px); background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- Sidebar --- */
+        .sidebar { width: 72px; background: var(--bg); display: flex; flex-direction: column; padding-top: 12px; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; position: fixed; top: 56px; bottom: 0; left: 0; z-index: 95; transition: width 0.3s cubic-bezier(0.2,0,0,1), box-shadow 0.3s; }
+        .sidebar.expanded { width: 240px; box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+        .sidebar:hover::-webkit-scrollbar-thumb { background: #717171; }
+
+        .sidebar-item { display: flex; align-items: center; padding: 10px 12px; margin: 0 8px; border-radius: 10px; color: var(--text); text-decoration: none; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 40px; gap: 24px; }
+        .sidebar-item:hover { background: var(--hover); }
+        .sidebar-item.active { background: var(--hover); font-weight: 500; }
+        .sidebar-item i { font-size: 20px; min-width: 24px; text-align: center; }
+        .sidebar-item span { display: none; font-size: 14px; }
+        
+        .sidebar.expanded .sidebar-item span { display: block; }
+        .sidebar.expanded .sidebar-item { flex-direction: row; height: auto; padding: 10px 12px; }
+        .sidebar:not(.expanded) .sidebar-item { flex-direction: column; gap: 6px; padding: 16px 0; margin: 0; border-radius: 0; font-size: 10px; height: auto; }
+        .sidebar:not(.expanded) .sidebar-item span { display: block; font-size: 10px; }
+
+        /* --- Content Area --- */
+        .content-area { margin-left: 72px; width: calc(100% - 72px); height: 100%; overflow-y: auto; padding: 0 24px 40px 24px; }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background: #717171; border-radius: 4px; }
+
+        /* --- Channel Header --- */
+        .channel-banner { width: 100%; height: 220px; border-radius: 16px; background: #272727; object-fit: cover; margin-bottom: 16px; }
+        
+        .channel-header-info { display: flex; align-items: flex-start; gap: 24px; margin-bottom: 24px; }
+        .channel-avatar { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .channel-details { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .channel-title { font-size: 36px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .channel-stats { font-size: 14px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .channel-desc { font-size: 14px; color: var(--text-sub); line-height: 1.4; max-width: 800px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer; }
+        .channel-links { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #3ea6ff; cursor: pointer; margin-top: 4px; }
+        
+        .channel-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+        .btn-subscribe { background: var(--text); color: var(--bg); border: none; padding: 10px 24px; border-radius: 20px; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-subscribe:hover { opacity: 0.9; }
+        .btn-join { background: rgba(255, 255, 255, 0.1); color: var(--text); border: none; padding: 10px 16px; border-radius: 20px; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-join:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* --- Tabs --- */
+        .tabs-container { display: flex; align-items: center; gap: 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
+        .tabs-container::-webkit-scrollbar { display: none; }
+        .tab { background: transparent; border: none; color: var(--text-sub); font-size: 15px; font-weight: 500; padding: 12px 0; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+        .tab:hover { color: var(--text); }
+        .tab.active { color: var(--text); border-bottom-color: var(--text); }
+
+        /* --- Tab Contents --- */
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Video Grid */
+        .video-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 16px; width: 100%; }
+        .video-card { cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px; }
+        .thumb-box { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #222; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .video-card:hover .thumb-box img { transform: scale(1.05); }
+        .duration { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.8); color: white; font-size: 12px; padding: 2px 4px; border-radius: 4px; }
+        .video-info h3 { font-size: 14px; font-weight: 500; line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .video-info p { font-size: 12px; color: var(--text-sub); }
+
+        /* Shorts Grid */
+        .shorts-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; width: 100%; }
+        .short-card { cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px; }
+        .short-thumb { aspect-ratio: 9/16; border-radius: 12px; overflow: hidden; background: #222; }
+        .short-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .short-card h3 { font-size: 14px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .short-card p { font-size: 12px; color: var(--text-sub); }
+
+        /* Photos Grid */
+        .photos-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; width: 100%; }
+        .photo-card { aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; background: #222; cursor: pointer; }
+        .photo-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .photo-card:hover img { transform: scale(1.05); }
+
+        /* Posts (Community) Grid */
+        .posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+        .post-card { background: #1f1f1f; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border); }
+        .post-header { display: flex; align-items: center; gap: 12px; }
+        .post-header img { width: 36px; height: 36px; border-radius: 50%; }
+        .post-header-info { display: flex; flex-direction: column; }
+        .post-header-name { font-size: 14px; font-weight: 500; }
+        .post-header-time { font-size: 12px; color: var(--text-sub); }
+        .post-text { font-size: 14px; line-height: 1.5; color: var(--text); white-space: pre-line; }
+        .post-image { width: 100%; aspect-ratio: 16/9; border-radius: 8px; object-fit: cover; background: #222; }
+        .post-footer { display: flex; align-items: center; gap: 24px; padding-top: 8px; }
+        .post-btn { background: none; border: none; color: var(--text-sub); font-size: 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .post-btn:hover { color: var(--text); }
+
+        /* --- Responsive --- */
+        @media (max-width: 1200px) {
+            .video-grid { grid-template-columns: repeat(3, 1fr); }
+            .shorts-grid { grid-template-columns: repeat(4, 1fr); }
+            .photos-grid { grid-template-columns: repeat(4, 1fr); }
+            .posts-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+            .shorts-grid { grid-template-columns: repeat(3, 1fr); }
+            .photos-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .header-center { display: none; }
+            .sidebar { display: none; }
+            .sidebar.expanded { display: flex; }
+            .content-area { margin-left: 0; width: 100%; padding: 0 12px 24px 12px; }
+            .channel-banner { height: 120px; border-radius: 0; margin: 0 -12px 16px -12px; width: calc(100% + 24px); }
+            .channel-header-info { flex-direction: column; gap: 12px; }
+            .channel-avatar { width: 80px; height: 80px; }
+            .channel-title { font-size: 24px; }
+            .shorts-grid { grid-template-columns: repeat(2, 1fr); }
+            .photos-grid { grid-template-columns: repeat(2, 1fr); }
+            .posts-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .video-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay for Sidebar -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" id="hamburger-btn"><i class="fa-solid fa-bars"></i></button>
+            <a href="index.html" class="logo"><i class="fa-brands fa-youtube"></i> YouTube <span class="country">BD</span></a>
+        </div>
+        <div class="header-center">
+            <div class="search-box">
+                <input type="text" placeholder="Search" id="headerSearchInput">
+                <button onclick="window.location.href='search.html?q=' + document.getElementById('headerSearchInput').value"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <button class="icon-btn"><i class="fa-solid fa-microphone"></i></button>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn"><i class="fa-solid fa-plus"></i></button>
+            <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- Sidebar (Same as index.html) -->
+        <aside class="sidebar" id="sidebar">
+            <a href="index.html" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family Members</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-star"></i><span>Highlights</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-heart"></i><span>Favorites</span></a>
+        </aside>
+
+        <main class="content-area">
+            <!-- Banner -->
+            <img src="https://images.unsplash.com/photo-1557682224-5b8590cd9ec5?q=80&w=2000&auto=format&fit=crop" class="channel-banner" alt="Banner" id="channelBanner">
+
+            <!-- Channel Info -->
+            <div class="channel-header-info">
+                <img src="https://ui-avatars.com/api/?name=User&background=random" class="channel-avatar" alt="Channel Avatar" id="channelAvatar">
+                <div class="channel-details">
+                    <h1 class="channel-title" id="channelName">Channel Name <i class="fa-solid fa-circle-check" style="font-size: 16px; color: #aaa;"></i></h1>
+                    <div class="channel-stats">
+                        <span id="channelHandle">@handle</span> • 
+                        <span id="channelSubs">0 subscribers</span> • 
+                        <span id="channelVideos">0 videos</span>
+                    </div>
+                    <div class="channel-desc">
+                        Welcome to the official YouTube channel. Here you will find amazing videos, tutorials, and much more. Don't forget to subscribe and hit the bell icon!
+                        <br><span style="color: #3ea6ff; cursor: pointer;">...more</span>
+                    </div>
+                    <div class="channel-links">
+                        <i class="fa-solid fa-link"></i> youtube.com/@handle
+                    </div>
+                    <div class="channel-actions">
+                        <button class="btn-subscribe">Subscribed <i class="fa-solid fa-chevron-down" style="font-size: 12px;"></i></button>
+                        <button class="btn-join"><i class="fa-regular fa-star"></i> Join</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <button class="tab active" data-tab="videos">Videos</button>
+                <button class="tab" data-tab="shorts">Shorts</button>
+                <button class="tab" data-tab="photos">Photos</button>
+                <button class="tab" data-tab="posts">Posts</button>
+            </div>
+
+            <!-- Videos Tab Content -->
+            <div class="tab-content active" id="tab-videos">
+                <div class="video-grid" id="videosGrid"></div>
+            </div>
+
+            <!-- Shorts Tab Content -->
+            <div class="tab-content" id="tab-shorts">
+                <div class="shorts-grid" id="shortsGrid"></div>
+            </div>
+
+            <!-- Photos Tab Content -->
+            <div class="tab-content" id="tab-photos">
+                <div class="photos-grid" id="photosGrid"></div>
+            </div>
+
+            <!-- Posts Tab Content -->
+            <div class="tab-content" id="tab-posts">
+                <div class="posts-grid" id="postsGrid"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CHANNEL DATA (URL based)
+        // ==========================================
+        const params = new URLSearchParams(window.location.search);
+        let channelName = params.get('name') || 'Ali Hossain';
+        
+        document.getElementById('channelName').innerHTML = `${channelName} <i class="fa-solid fa-circle-check" style="font-size: 16px; color: #aaa;"></i>`;
+        document.getElementById('channelHandle').textContent = `@${channelName.toLowerCase().replace(/\s+/g, '')}`;
+        document.getElementById('channelSubs').textContent = `${(Math.random() * 500).toFixed(1)}K subscribers`;
+        document.getElementById('channelVideos').textContent = `${Math.floor(Math.random() * 100) + 10} videos`;
+        document.getElementById('channelAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(channelName)}&background=random&size=160`;
+
+        // ==========================================
+        // 2. DUMMY DATA
+        // ==========================================
+        const dummyVideos = [
+            { id: "hvL1339luv0", title: "Introduction | CSS3 Tutorials For Beginners | Part 00", views: "2.1M views", time: "3 years ago", duration: "7:11" },
+            { id: "0e3GPea1Tyg", title: "HTML Attributes | HTML Tutorial For Beginners | Part 05", views: "1.2M views", time: "3 years ago", duration: "18:57" },
+            { id: "JpV84jE41w8", title: "JavaScript DOM Beginners | Part 32 | JavaScript Tutorial", views: "500K views", time: "1 year ago", duration: "31:10" },
+            { id: "3jL5oX2xP7c", title: "CSS Selectors | CSS3 Tutorials For Beginners", views: "900K views", time: "3 years ago", duration: "9:21" },
+            { id: "9bZkp7q19f0", title: "Complete BCS Tutorial for Beginners", views: "5M views", time: "4 years ago", duration: "4:12" },
+            { id: "dQw4w9WgXcQ", title: "WordPress Masterclass | Build Your First Website", views: "1.5M views", time: "2 weeks ago", duration: "3:32" },
+            { id: "kJQP7kiw5Fk", title: "Complete Web Dev Roadmap 2024", views: "800K views", time: "1 month ago", duration: "15:42" },
+            { id: "JGwWNGJdvx8", title: "How to Deploy Website on Vercel", views: "400K views", time: "5 months ago", duration: "10:23" }
+        ];
+
+        const dummyShorts = [
+            { id: "8lqB7jR99j8", title: "One infected plug...", views: "4.6M views" },
+            { id: "y83x7MgzWOA", title: "A day in a Web Dev's life...", views: "1.4M views" },
+            { id: "5qap5aO4i9A", title: "OPUS 4.8 দিয়ে কি হবে?", views: "2.7M views" },
+            { id: "hHW1oY26kxQ", title: "AI Automation", views: "1.9M views" },
+            { id: "L_jWHffIx5E", title: "Claude 4 Token Control", views: "544K views" },
+            { id: "e-ORhEE9VVg", title: "HTML vs CSS vs JS", views: "1.2M views" },
+            { id: "RgKAFK5djSk", title: "Coding Tips for Beginners", views: "800K views" }
+        ];
+
+        const dummyPhotos = [
+            { url: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=500&q=80" },
+            { url: "https://images.unsplash.com/photo-1531297172861-2c9b6b2c1f1f?auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        const dummyPosts = [
+            { text: "আমাদের নতুন কোর্স 'React Masterclass' কি ভাবে লাইভ হচ্ছে! আজ রাত ৯টায়।", image: "https://i.ytimg.com/vi/hvL1339luv0/hqdefault.jpg", time: "3 months ago" },
+            { text: "প্রিয় স্টুডেন্টস, আপনাদের সাপোর্টের জন্য অনেক ধন্যবাদ। খুব শীঘ্রই নতুন একটি প্রজেক্ট নিয়ে হাজির হচ্ছি!", image: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg", time: "4 months ago" },
+            { text: "আজকের দিনটি আপনার জন্য শুভ হোক। কোডিং শিখতে থাকুন, নিজের স্বপ্ন পূরণ করুন। 🚀", image: "https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg", time: "7 months ago" }
+        ];
+
+        // ==========================================
+        // 3. RENDER FUNCTIONS
+        // ==========================================
+        function renderVideos() {
+            document.getElementById('videosGrid').innerHTML = dummyVideos.map(v => `
+                <a href="watch.html?v=${v.id}" class="video-card">
+                    <div class="thumb-box">
+                        <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="Thumb">
+                        <span class="duration">${v.duration}</span>
+                    </div>
+                    <div class="video-info">
+                        <h3>${v.title}</h3>
+                        <p>${channelName} • ${v.views} • ${v.time}</p>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function renderShorts() {
+            document.getElementById('shortsGrid').innerHTML = dummyShorts.map(s => `
+                <a href="watch.html?v=${s.id}" class="short-card">
+                    <div class="short-thumb">
+                        <img src="https://i.ytimg.com/vi/${s.id}/hqdefault.jpg" alt="Short">
+                    </div>
+                    <h3>${s.title}</h3>
+                    <p>${s.views}</p>
+                </a>
+            `).join('');
+        }
+
+        function renderPhotos() {
+            document.getElementById('photosGrid').innerHTML = dummyPhotos.map(p => `
+                <div class="photo-card">
+                    <img src="${p.url}" alt="Photo">
+                </div>
+            `).join('');
+        }
+
+        function renderPosts() {
+            document.getElementById('postsGrid').innerHTML = dummyPosts.map(p => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(channelName)}&background=random" alt="Avatar">
+                        <div class="post-header-info">
+                            <span class="post-header-name">${channelName}</span>
+                            <span class="post-header-time">${p.time}</span>
+                        </div>
+                    </div>
+                    <div class="post-text">${p.text}</div>
+                    ${p.image ? `<img src="${p.image}" class="post-image" alt="Post Image">` : ''}
+                    <div class="post-footer">
+                        <button class="post-btn"><i class="fa-regular fa-thumbs-up"></i> 118</button>
+                        <button class="post-btn"><i class="fa-regular fa-thumbs-down"></i></button>
+                        <button class="post-btn"><i class="fa-regular fa-comment"></i> 17</button>
+                        <button class="post-btn"><i class="fa-solid fa-share"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initial Render
+        renderVideos();
+        renderShorts();
+        renderPhotos();
+        renderPosts();
+
+        // ==========================================
+        // 4. TAB SWITCHING LOGIC
+        // ==========================================
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const targetId = 'tab-' + tab.getAttribute('data-tab');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // ==========================================
+        // 5. SIDEBAR (HAMBURGER) LOGIC
+        // ==========================================
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+            overlay.classList.toggle('active');
+        });
+
+        function closeSidebar() {
+            sidebar.classList.remove('expanded');
+            overlay.classList.remove('active');
+        }
+    </script>
+</body>
+</html>

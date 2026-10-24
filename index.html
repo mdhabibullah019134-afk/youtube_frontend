@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #0f0f0f; --text: #f1f1f1; --text-sub: #aaa; --hover: #272727; --border: #303030; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* Header */
+        header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 56px; position: fixed; width: 100%; background: var(--bg); z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .icon-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+        .icon-btn:hover { background: var(--hover); }
+        .logo { display: flex; align-items: center; font-size: 20px; font-weight: bold; letter-spacing: -1px; color: var(--text); text-decoration: none; cursor: pointer; }
+        .logo i { color: #ff0000; font-size: 28px; margin-right: 4px; }
+        .logo span.country { font-size: 10px; color: var(--text-sub); align-self: flex-start; margin-top: 4px; margin-left: 2px; }
+
+        .header-center { display: flex; align-items: center; flex: 1; max-width: 700px; margin: 0 20px; gap: 16px; }
+        .search-box { display: flex; flex: 1; background: #121212; border: 1px solid var(--border); border-radius: 40px; height: 40px; overflow: hidden; position: relative; }
+        .search-box input { flex: 1; background: transparent; border: none; color: var(--text); padding: 0 16px; outline: none; }
+        .search-box button { background: #222; border: none; border-left: 1px solid var(--border); padding: 0 20px; color: var(--text); cursor: pointer; }
+        .search-box button:hover { background: #333; }
+
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute; top: 44px; left: 0; right: 0;
+            background: #212121; border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; display: none;
+            z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            max-height: 320px; overflow-y: auto;
+        }
+        .search-suggestions.active { display: block; }
+        .suggestion-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px; cursor: pointer; font-size: 14px;
+        }
+        .suggestion-item:hover, .suggestion-item.highlighted { background: #303030; }
+        .suggestion-item i { color: var(--text-sub); font-size: 14px; }
+        .suggestion-item .suggestion-text { flex: 1; }
+
+        /* Mobile Header Icons */
+        .mobile-actions { display: none; align-items: center; gap: 16px; }
+        .mobile-actions .icon-btn { font-size: 22px; }
+
+        /* Mobile Search Full Page Overlay */
+        .mobile-search-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 999;
+            display: none; flex-direction: column; padding: 8px 16px;
+        }
+        .mobile-search-overlay.active { display: flex; }
+        .mobile-search-header { display: flex; align-items: center; gap: 12px; height: 48px; }
+        .mobile-search-header .back-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; }
+        .mobile-search-header .search-box { flex: 1; height: 40px; margin: 0; background: #121212; border: none; border-radius: 8px; }
+        .mobile-search-header .search-box input { padding: 0 12px; font-size: 16px; }
+        .mobile-search-header .search-box button { background: transparent; border: none; padding: 0 12px; font-size: 18px; }
+        .mobile-search-content { flex: 1; overflow-y: auto; margin-top: 8px; }
+
+        /* Voice Overlay */
+        .voice-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .voice-overlay.active { display: flex; }
+        .voice-overlay-inner { background: #212121; padding: 32px 40px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; min-width: 280px; }
+        .voice-overlay-inner p { font-size: 18px; font-weight: 500; }
+        .voice-wave { display: flex; align-items: center; gap: 6px; height: 40px; }
+        .voice-wave span { width: 6px; background: #ff0000; border-radius: 3px; animation: voicePulse 0.8s ease-in-out infinite; }
+        .voice-wave span:nth-child(1) { height: 16px; animation-delay: 0s; }
+        .voice-wave span:nth-child(2) { height: 32px; animation-delay: 0.15s; }
+        .voice-wave span:nth-child(3) { height: 40px; animation-delay: 0.3s; }
+        .voice-wave span:nth-child(4) { height: 32px; animation-delay: 0.45s; }
+        .voice-wave span:nth-child(5) { height: 16px; animation-delay: 0.6s; }
+        @keyframes voicePulse { 0%, 100% { transform: scaleY(0.5); opacity: 0.6; } 50% { transform: scaleY(1.2); opacity: 1; } }
+        .voice-cancel { background: none; border: 1px solid var(--border); color: var(--text); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+        .voice-cancel:hover { background: var(--hover); }
+        .voice-mic-active { background: #ff0000 !important; color: white !important; }
+
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        .create-btn { background: var(--hover); color: var(--text); border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; margin-left: 8px; }
+        .notif-badge { position: absolute; top: 4px; right: 4px; background: #cc0000; color: white; font-size: 10px; font-weight: bold; padding: 1px 4px; border-radius: 10px; border: 2px solid var(--bg); }
+
+        /* Main Layout */
+        .main-container { display: flex; margin-top: 56px; height: calc(100vh - 56px); position: relative; }
+
+        /* Overlay */
+        .overlay { position: fixed; top: 56px; left: 0; width: 100%; height: calc(100% - 56px); background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* Sidebar */
+        .sidebar { width: 72px; background: var(--bg); display: flex; flex-direction: column; padding-top: 12px; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; position: fixed; top: 56px; bottom: 0; left: 0; z-index: 95; transition: width 0.3s cubic-bezier(0.2,0,0,1), box-shadow 0.3s; }
+        .sidebar.expanded { width: 240px; box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+        .sidebar:hover::-webkit-scrollbar-thumb { background: #717171; }
+        .sidebar-item { display: flex; align-items: center; padding: 10px 12px; margin: 0 8px; border-radius: 10px; color: var(--text); text-decoration: none; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 40px; gap: 24px; }
+        .sidebar-item:hover { background: var(--hover); }
+        .sidebar-item.active { background: var(--hover); font-weight: 500; }
+        .sidebar-item i { font-size: 20px; min-width: 24px; text-align: center; }
+        .sidebar-item span { display: none; font-size: 14px; }
+        .sidebar.expanded .sidebar-item span { display: block; }
+        .sidebar.expanded .sidebar-item { flex-direction: row; height: auto; padding: 10px 12px; }
+        .sidebar:not(.expanded) .sidebar-item { flex-direction: column; gap: 6px; padding: 16px 0; margin: 0; border-radius: 0; font-size: 10px; height: auto; }
+        .sidebar:not(.expanded) .sidebar-item span { display: block; font-size: 10px; }
+
+        /* Page Views */
+        .page-view { display: none; flex: 1; height: 100%; overflow-y: auto; padding: 0 24px 24px 0; margin-left: 72px; width: calc(100% - 72px); }
+        .page-view.active-view { display: block; }
+        .page-view::-webkit-scrollbar { width: 8px; }
+        .page-view::-webkit-scrollbar-thumb { background: #717171; border-radius: 4px; }
+
+        /* Home Page */
+        .filter-bar { display: flex; gap: 12px; padding: 12px 0; position: sticky; top: 0; background: var(--bg); z-index: 10; overflow-x: auto; scrollbar-width: none; }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .chip { background: var(--hover); color: var(--text); border: none; padding: 6px 12px; border-radius: 8px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+        .chip.active { background: var(--text); color: var(--bg); }
+
+        /* Video Grid */
+        .video-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 16px; padding-top: 12px; width: 100%; }
+        .video-card { cursor: pointer; display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: inherit; }
+        .thumb-box { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #222; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .video-card:hover .thumb-box img { transform: scale(1.05); }
+        .duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; font-size: 12px; font-weight: 500; padding: 2px 4px; border-radius: 4px; }
+        
+        .video-info { display: flex; gap: 12px; }
+        .avatar-link { flex-shrink: 0; display: block; text-decoration: none; }
+        .video-info img { width: 36px; height: 36px; border-radius: 50%; }
+        .details { flex: 1; }
+        .details h3 { font-size: 16px; font-weight: 500; line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--text); }
+        .channel-link { font-size: 14px; color: var(--text-sub); text-decoration: none; display: inline-block; margin-bottom: 2px; }
+        .channel-link:hover { color: var(--text); }
+        .details p { font-size: 14px; color: var(--text-sub); }
+
+        /* Shorts Section */
+        .shorts-section { margin: 16px 0 24px 0; padding: 16px; border-radius: 12px; background: #181818; border: 1px solid var(--border); }
+        .shorts-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .shorts-title { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; cursor: pointer; }
+        .shorts-title i { color: #ff0000; font-size: 24px; }
+        .shorts-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; width: 100%; overflow: hidden; scrollbar-width: none; }
+        .short-card { display: flex; flex-direction: column; gap: 12px; width: 100%; min-width: 0; cursor: pointer; }
+        .short-thumb-box { width: 100%; aspect-ratio: 9/16; border-radius: 12px; overflow: hidden; background: #222; position: relative; }
+        .short-thumb-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .short-card:hover .short-thumb-box img { transform: scale(1.05); }
+        .short-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .short-info h3 { font-size: 14px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+        .short-info p { font-size: 12px; color: var(--text-sub); }
+        .short-info .more-icon { font-size: 18px; color: var(--text-sub); padding: 4px; cursor: pointer; border-radius: 50%; flex-shrink: 0; }
+        .short-info .more-icon:hover { background: var(--hover); color: var(--text); }
+
+        /* Shorts Modal */
+        .shorts-modal { position: fixed; top: 56px; left: 0; width: 100%; height: calc(100% - 56px); background: var(--bg); z-index: 95; display: none; flex-direction: column; overflow: hidden; }
+        .shorts-modal.active { display: flex; }
+        .shorts-modal-content { display: flex; width: 100%; height: 100%; align-items: flex-start; justify-content: center; position: relative; padding-top: 16px; padding-bottom: 16px; overflow-y: auto; }
+        .shorts-player-wrapper { position: relative; height: 100%; max-height: calc(100vh - 56px - 32px); aspect-ratio: 9 / 16; background: #000; display: flex; flex-direction: column; justify-content: center; border-radius: 12px; overflow: hidden; }
+        .shorts-scroll-container { width: 100%; height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .shorts-scroll-container::-webkit-scrollbar { display: none; }
+        .shorts-slide { width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; scroll-snap-stop: always; position: relative; }
+        .shorts-slide iframe { width: 100%; height: 100%; border: none; display: block; }
+        .shorts-overlay-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 16px; background: linear-gradient(transparent, rgba(0,0,0,0.85) 60%); display: flex; flex-direction: column; align-items: flex-start; gap: 12px; pointer-events: none; z-index: 5; }
+        .shorts-overlay-info > * { pointer-events: auto; max-width: 75%; }
+        .channel-info { display: flex; align-items: center; gap: 12px; }
+        .channel-info img { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+        .channel-info h3 { font-size: 14px; font-weight: 500; cursor: pointer; color: white; }
+        .channel-info button { background: white; color: black; border: none; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 13px; cursor: pointer; margin-left: 8px; }
+        .channel-info button:hover { background: #ddd; }
+        .short-title { font-size: 15px; font-weight: 500; line-height: 1.4; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .short-audio { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px; width: fit-content; cursor: pointer; transition: 0.2s; }
+        .short-audio:hover { background: rgba(255,255,255,0.25); }
+        .short-audio i { font-size: 12px; color: white; }
+        .short-audio span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; color: white; }
+        .shorts-actions { display: flex; flex-direction: column; gap: 20px; margin-left: 16px; align-items: center; justify-content: flex-end; padding-bottom: 20px; }
+        .action-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; color: white; background: none; border: none; cursor: pointer; transition: 0.2s; }
+        .action-btn:hover { opacity: 0.8; }
+        .action-icon { width: 48px; height: 48px; border-radius: 50%; background: #272727; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .action-btn span { font-size: 12px; font-weight: 500; color: var(--text); }
+        .remix-thumb { width: 48px; height: 64px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); margin-top: 4px; }
+        .shorts-nav-down { position: absolute; right: 24px; bottom: 24px; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; z-index: 1010; }
+        .shorts-nav-down:hover { background: rgba(255,255,255,0.2); }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .video-grid { grid-template-columns: repeat(3, 1fr); }
+            .shorts-container { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+            .shorts-container { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .header-center { display: none; }
+            .create-btn { display: none; }
+            .header-right .icon-btn { display: none; }
+            .mobile-actions { display: flex; margin-left: auto; margin-right: 8px; }
+            .page-view { margin-left: 0; width: 100%; padding: 0 12px 12px 12px; }
+            .sidebar { display: none; }
+            .sidebar.expanded { display: flex; }
+            .shorts-modal-content { flex-direction: column; padding-top: 8px; padding-bottom: 0; align-items: center; }
+            .shorts-player-wrapper { max-height: calc(100vh - 56px - 8px); height: 100%; border-radius: 0; width: 100%; aspect-ratio: auto; }
+            .shorts-actions { flex-direction: row; position: absolute; right: 12px; bottom: 120px; margin: 0; background: transparent; flex-wrap: wrap; width: 56px; gap: 16px; }
+            .shorts-nav-down { right: 16px; bottom: 16px; }
+            .shorts-overlay-info { bottom: 12px; }
+            .shorts-overlay-info > * { max-width: 100%; }
+        }
+        @media (max-width: 600px) {
+            .video-grid { grid-template-columns: 1fr; }
+            .shorts-container { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" id="hamburger-btn"><i class="fa-solid fa-bars"></i></button>
+            <a href="index.html" class="logo"><i class="fa-brands fa-youtube"></i> YouTube <span class="country">BD</span></a>
+        </div>
+        
+        <div class="header-center">
+            <div class="search-box" id="desktopSearchBox">
+                <input type="text" id="desktopSearchInput" placeholder="Search" autocomplete="off">
+                <button id="desktopSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <div class="search-suggestions" id="desktopSearchSuggestions"></div>
+            </div>
+            <button class="icon-btn" id="desktopVoiceSearchBtn" style="background:#181818" title="Search with your voice">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Actions (Icons only) -->
+        <div class="mobile-actions">
+            <button class="icon-btn" id="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="icon-btn" id="mobileVoiceSearchBtn"><i class="fa-solid fa-microphone"></i></button>
+        </div>
+
+        <div class="header-right">
+            <button class="create-btn"><i class="fa-solid fa-plus"></i> Create</button>
+            <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="notif-badge">9+</span></button>
+            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
+        </div>
+    </header>
+
+    <!-- Mobile Search Full Page Overlay -->
+    <div class="mobile-search-overlay" id="mobileSearchOverlay">
+        <div class="mobile-search-header">
+            <button class="back-btn" id="mobileSearchClose"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="search-box">
+                <input type="text" id="mobileSearchInput" placeholder="Search" autocomplete="off">
+                <button id="mobileSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <button class="icon-btn" id="mobileVoiceSearchOverlayBtn" style="padding: 8px;"><i class="fa-solid fa-microphone"></i></button>
+        </div>
+        <div class="mobile-search-content" id="mobileSearchSuggestions"></div>
+    </div>
+
+    <!-- Voice Search Overlay -->
+    <div class="voice-overlay" id="voiceOverlay">
+        <div class="voice-overlay-inner">
+            <p id="voiceStatus">Listening…</p>
+            <div class="voice-wave"><span></span><span></span><span></span><span></span><span></span></div>
+            <button class="voice-cancel" id="voiceCancelBtn">Cancel</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <a href="#" class="sidebar-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family Members</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-star"></i><span>Highlights</span></a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-heart"></i><span>Favorites</span></a>
+        </aside>
+
+        <main class="page-view active-view" id="home-page">
+            <div class="filter-bar">
+                <button class="chip active">All</button>
+                <button class="chip">videos</button>
+                <button class="chip">photos</button>
+                <button class="chip">post</button>
+            </div>
+            <div id="dynamic-content"></div>
+        </main>
+    </div>
+
+    <!-- Shorts Popup Modal -->
+    <div class="shorts-modal" id="shortsModal" onclick="closeShortsModal()">
+        <div class="shorts-modal-content" onclick="event.stopPropagation()">
+            <div class="shorts-player-wrapper">
+                <div class="shorts-scroll-container" id="shortsScroll">
+                    <div class="shorts-slide">
+                        <iframe id="shortsFrame" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="shorts-overlay-info">
+                    <div class="channel-info">
+                        <img src="https://ui-avatars.com/api/?name=Shalus&background=random" alt="Channel">
+                        <h3>@Shalus_PinkKitchen</h3>
+                        <button onclick="event.stopPropagation()">Subscribe</button>
+                    </div>
+                    <div class="short-title" id="shortTitle">Viral Cucumber Imli Shots | 🥒🌶️...</div>
+                    <div class="short-audio">
+                        <i class="fa-solid fa-music"></i>
+                        <span>Appadipodu (From "Gilli") · Vidyasagar, KK, Anuradha Sriram...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="shorts-actions" onclick="event.stopPropagation()">
+                <button class="action-btn"><div class="action-icon"><i class="fa-regular fa-heart"></i></div><span>19K</span></button>
+                <button class="action-btn"><div class="action-icon"><i class="fa-regular fa-comment"></i></div><span>132</span></button>
+                <button class="action-btn"><div class="action-icon"><i class="fa-solid fa-share"></i></div><span>Share</span></button>
+                <button class="action-btn"><div class="action-icon"><i class="fa-solid fa-arrows-rotate"></i></div><span>Remix</span><img src="https://i.ytimg.com/vi/8lqB7jR99j8/hqdefault.jpg" class="remix-thumb" alt="Remix"></button>
+            </div>
+            <button class="shorts-nav-down" onclick="event.stopPropagation(); nextShort()"><i class="fa-solid fa-arrow-down"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const videos = [
+            { id: "hvL1339luv0", title: "BABA YAGA | PART 01 | A Horror Story | Bangla Cartoon", author: "Rupali Pordar Anime", views: "1.2M views", time: "1 month ago", duration: "1:00:10", avatar: "Rupali" },
+            { id: "0e3GPea1Tyg", title: "$456,000 Squid Game In Real Life!", author: "MrBeast", views: "500M views", time: "2 years ago", duration: "25:42", avatar: "MrBeast" },
+            { id: "JpV84jE41w8", title: "MESSI GANA! TOP 5 OFICIAL 2026", author: "OFICIAL YA", views: "76K views", time: "13d ago", duration: "12:31", avatar: "Messi" },
+            { id: "3jL5oX2xP7c", title: "মেয়েদের স্বাস্থ্য নিয়ে কিছু কথা | Tasnim Jara", author: "Tasnim Jara", views: "1.5M views", time: "3 years ago", duration: "10:15", avatar: "Tasnim" },
+            { id: "9bZkp7q19f0", title: "PSY - GANGNAM STYLE(강남스타일) M/V", author: "officialpsy", views: "5B views", time: "11 years ago", duration: "4:12", avatar: "PSY" },
+            { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up", author: "Rick Astley", views: "1.5B views", time: "14 years ago", duration: "3:32", avatar: "Rick" },
+            { id: "kJQP7kiw5Fk", title: "Luis Fonsi - Despacito ft. Daddy Yankee", author: "Luis Fonsi", views: "8B views", time: "6 years ago", duration: "4:42", avatar: "Luis" },
+            { id: "JGwWNGJdvx8", title: "Ed Sheeran - Shape of You", author: "Ed Sheeran", views: "6B views", time: "7 years ago", duration: "4:23", avatar: "Ed" },
+            { id: "RgKAFK5djSk", title: "Wiz Khalifa - See You Again ft. Charlie Puth", author: "Wiz Khalifa", views: "6B views", time: "8 years ago", duration: "3:57", avatar: "Wiz" },
+            { id: "OPf0YbXqDm0", title: "Mark Ronson - Uptown Funk ft. Bruno Mars", author: "Mark Ronson", views: "4.5B views", time: "9 years ago", duration: "4:30", avatar: "Mark" },
+            { id: "fJ9rUzIMcZQ", title: "Queen - Bohemian Rhapsody (Official Video)", author: "Queen Official", views: "1.8B views", time: "15 years ago", duration: "5:59", avatar: "Queen" },
+            { id: "hTWKbfoikeg", title: "Nirvana - Smells Like Teen Spirit", author: "Nirvana", views: "1.7B views", time: "14 years ago", duration: "5:01", avatar: "Nirvana" }
+        ];
+
+        const shortsData = [
+            { id: "8lqB7jR99j8", title: "Viral Cucumber Imli Shots | 🥒🌶️", views: "8.4M views" },
+            { id: "y83x7MgzWOA", title: "সিমসিমকে কি ক্যামরা বোকা বানাচ্ছে? 😳", views: "1M views" },
+            { id: "5qap5aO4i9A", title: "সৌদি আরবে যদি দিয়ে এমন ২-৩ টা কাট্টমার...", views: "2.7M views" },
+            { id: "hHW1oY26kxQ", title: "Harry Potter (2002) Cast Then and Now 2024...", views: "4.9M views" },
+            { id: "L_jWHffIx5E", title: "Mamitha and Kids are cute, but this connection...", views: "355K views" },
+            { id: "e-ORhEE9VVg", title: "Another awesome short video to watch!", views: "1.2M views" }
+        ];
+
+        function createShortsSectionHTML() {
+            const displayedShorts = shortsData.slice(0, 5);
+            let shortCardsHTML = '';
+            displayedShorts.forEach(short => {
+                shortCardsHTML += `
+                    <div class="short-card" onclick="openShortsModal('${short.id}', '${short.title.replace(/'/g, "\\'")}')">
+                        <div class="short-thumb-box">
+                            <img src="https://i.ytimg.com/vi/${short.id}/hqdefault.jpg" alt="Short">
+                        </div>
+                        <div class="short-info">
+                            <div>
+                                <h3>${short.title}</h3>
+                                <p>${short.views}</p>
+                            </div>
+                            <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+                        </div>
+                    </div>
+                `;
+            });
+            return `
+                <div class="shorts-section" id="shorts-section-top">
+                    <div class="shorts-header">
+                        <div class="shorts-title"><i class="fa-solid fa-bolt"></i> Shorts</div>
+                        <i class="fa-solid fa-ellipsis-vertical" style="cursor:pointer; font-size:20px; color:var(--text-sub);"></i>
+                    </div>
+                    <div class="shorts-container">${shortCardsHTML}</div>
+                </div>
+            `;
+        }
+
+        function createVideoCardHTML(video) {
+            return `
+                <div class="video-card">
+                    <a href="watch.html?v=${video.id}" class="thumb-box-link" style="text-decoration:none;">
+                        <div class="thumb-box">
+                            <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="Thumbnail">
+                            <span class="duration">${video.duration}</span>
+                        </div>
+                    </a>
+                    <div class="video-info">
+                        <a href="channel.html?name=${encodeURIComponent(video.avatar)}" class="avatar-link">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(video.avatar)}&background=random" alt="Avatar">
+                        </a>
+                        <div class="details">
+                            <a href="watch.html?v=${video.id}" style="text-decoration:none; color:inherit;">
+                                <h3>${video.title}</h3>
+                            </a>
+                            <a href="channel.html?name=${encodeURIComponent(video.avatar)}" class="channel-link">
+                                ${video.author} <i class="fa-solid fa-circle-check" style="font-size:12px; color:gray;"></i>
+                            </a>
+                            <p>${video.views} • ${video.time}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function buildHomePage() {
+            const container = document.getElementById('dynamic-content');
+            let htmlContent = '';
+            const videosPerRow = 4;
+            for (let i = 0; i < videos.length; i += videosPerRow) {
+                htmlContent += `<div class="video-grid">`;
+                const rowVideos = videos.slice(i, i + videosPerRow);
+                rowVideos.forEach(video => {
+                    htmlContent += createVideoCardHTML(video);
+                });
+                htmlContent += `</div>`;
+                if (i + videosPerRow < videos.length) {
+                    htmlContent += createShortsSectionHTML();
+                }
+            }
+            container.innerHTML = htmlContent;
+        }
+        buildHomePage();
+
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+            overlay.classList.toggle('active');
+        });
+        function closeSidebar() {
+            sidebar.classList.remove('expanded');
+            overlay.classList.remove('active');
+        }
+
+        /* Shorts Modal Logic */
+        const shortsModal = document.getElementById('shortsModal');
+        const shortsScroll = document.getElementById('shortsScroll');
+        const shortsFrame = document.getElementById('shortsFrame');
+        const shortTitle = document.getElementById('shortTitle');
+        let currentShortIndex = 0;
+        let shortSlides = [];
+
+        function buildShortSlide(videoId, autoplay) {
+            const slide = document.createElement('div');
+            slide.className = 'shorts-slide';
+            const iframe = document.createElement('iframe');
+            iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+            iframe.allowFullscreen = true;
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&enablejsapi=1`;
+            slide.appendChild(iframe);
+            return { slide, iframe, videoId };
+        }
+        function setTitleByIndex(index) {
+            const s = shortsData[index % shortsData.length];
+            if (s) shortTitle.textContent = s.title || "Viral Short Video";
+        }
+        function pauseOthers(activeIndex) {
+            shortSlides.forEach((s, i) => {
+                if (!s || i === activeIndex) return;
+                try { s.iframe.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }), '*'); } catch (e) {}
+            });
+        }
+        function playActive(activeIndex) {
+            const s = shortSlides[activeIndex];
+            if (!s) return;
+            try { s.iframe.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*'); } catch (e) {}
+        }
+        function openShortsModal(videoId, title) {
+            shortsScroll.innerHTML = ''; shortSlides = []; currentShortIndex = 0;
+            const first = buildShortSlide(videoId, true);
+            shortsScroll.appendChild(first.slide); shortSlides.push(first);
+            const nextIdx = (shortsData.findIndex(s => s.id === videoId) + 1) % shortsData.length;
+            const nextData = shortsData[nextIdx];
+            if (nextData) {
+                const second = buildShortSlide(nextData.id, false);
+                shortsScroll.appendChild(second.slide); shortSlides.push(second);
+            }
+            shortTitle.textContent = title || "Viral Short Video";
+            shortsModal.classList.add('active');
+            shortsScroll.scrollTop = 0;
+            setTimeout(() => playActive(0), 300);
+        }
+        function closeShortsModal() {
+            shortsModal.classList.remove('active');
+            shortsScroll.innerHTML = ''; shortSlides = []; currentShortIndex = 0;
+        }
+        shortsScroll.addEventListener('scroll', () => {
+            const slideHeight = shortsScroll.clientHeight;
+            if (!slideHeight) return;
+            const newIndex = Math.round(shortsScroll.scrollTop / slideHeight);
+            if (newIndex === currentShortIndex) return;
+            currentShortIndex = newIndex;
+            if (!shortSlides[newIndex]) {
+                const data = shortsData[newIndex % shortsData.length];
+                const built = buildShortSlide(data.id, false);
+                shortsScroll.appendChild(built.slide); shortSlides[newIndex] = built;
+            }
+            const lookAhead = newIndex + 1;
+            if (!shortSlides[lookAhead]) {
+                const data = shortsData[lookAhead % shortsData.length];
+                const built = buildShortSlide(data.id, false);
+                shortsScroll.appendChild(built.slide); shortSlides[lookAhead] = built;
+            }
+            setTitleByIndex(newIndex); pauseOthers(newIndex); playActive(newIndex);
+            if (newIndex >= 2) {
+                const old = shortSlides[newIndex - 2];
+                if (old && old.slide.parentNode) {
+                    old.slide.parentNode.removeChild(old.slide); shortSlides[newIndex - 2] = null;
+                }
+            }
+        });
+        function nextShort() {
+            if (!shortsScroll.clientHeight) return;
+            const target = (currentShortIndex + 1) * shortsScroll.clientHeight;
+            shortsScroll.scrollTo({ top: target, behavior: 'smooth' });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (!shortsModal.classList.contains('active')) return;
+            if (e.key === 'ArrowDown') { e.preventDefault(); nextShort(); }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const target = Math.max(0, (currentShortIndex - 1) * shortsScroll.clientHeight);
+                shortsScroll.scrollTo({ top: target, behavior: 'smooth' });
+            }
+            if (e.key === 'Escape') { closeShortsModal(); }
+        });
+
+        /* SEARCH & VOICE SEARCH */
+        const suggestionPool = [
+            'baba yaga bangla cartoon', 'squid game real life', 'messi top 5',
+            'tasnim jara health', 'gangnam style', 'never gonna give you up',
+            'despacito', 'shape of you', 'see you again', 'uptown funk',
+            'bohemian rhapsody', 'smells like teen spirit', 'shorts viral',
+            'cucumber imli shots', 'islamic lecture mokhtar ahmed'
+        ];
+        function goToSearch(query) {
+            const q = (query || '').trim();
+            if (q) window.location.href = 'search.html?q=' + encodeURIComponent(q);
+        }
+
+        const desktopSearchInput = document.getElementById('desktopSearchInput');
+        const desktopSearchBtn = document.getElementById('desktopSearchBtn');
+        const desktopSearchSuggestions = document.getElementById('desktopSearchSuggestions');
+
+        function renderSuggestions(value, container) {
+            const v = value.trim().toLowerCase();
+            if (!v) { container.classList.remove('active'); container.innerHTML = ''; return; }
+            const matches = suggestionPool.filter(s => s.includes(v)).slice(0, 8);
+            if (!matches.length) { container.classList.remove('active'); container.innerHTML = ''; return; }
+            container.innerHTML = matches.map(m => `
+                <div class="suggestion-item" data-value="${m.replace(/"/g, '&quot;')}">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span class="suggestion-text">${m}</span>
+                    <i class="fa-solid fa-arrow-up-left" style="font-size:11px;"></i>
+                </div>
+            `).join('');
+            container.classList.add('active');
+        }
+        desktopSearchInput?.addEventListener('input', (e) => renderSuggestions(e.target.value, desktopSearchSuggestions));
+        desktopSearchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); goToSearch(desktopSearchInput.value); }
+        });
+        desktopSearchBtn?.addEventListener('click', () => goToSearch(desktopSearchInput.value));
+        desktopSearchSuggestions?.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if (item) goToSearch(item.dataset.value);
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#desktopSearchBox')) desktopSearchSuggestions?.classList.remove('active');
+        });
+
+        const mobileSearchToggle = document.getElementById('mobileSearchToggle');
+        const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
+        const mobileSearchClose = document.getElementById('mobileSearchClose');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const mobileSearchSuggestions = document.getElementById('mobileSearchSuggestions');
+
+        mobileSearchToggle?.addEventListener('click', () => {
+            mobileSearchOverlay.classList.add('active');
+            setTimeout(() => mobileSearchInput.focus(), 100);
+        });
+        mobileSearchClose?.addEventListener('click', () => {
+            mobileSearchOverlay.classList.remove('active');
+            mobileSearchInput.value = '';
+            mobileSearchSuggestions.innerHTML = '';
+        });
+        mobileSearchInput?.addEventListener('input', (e) => renderSuggestions(e.target.value, mobileSearchSuggestions));
+        mobileSearchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); goToSearch(mobileSearchInput.value); }
+        });
+        mobileSearchBtn?.addEventListener('click', () => goToSearch(mobileSearchInput.value));
+        mobileSearchSuggestions?.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if (item) goToSearch(item.dataset.value);
+        });
+
+        let recognition = null;
+        let isListening = false;
+        const voiceOverlay = document.getElementById('voiceOverlay');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const voiceCancelBtn = document.getElementById('voiceCancelBtn');
+
+        function setupRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return null;
+            const rec = new SpeechRecognition();
+            rec.lang = 'bn-BD'; rec.continuous = false; rec.interimResults = true; rec.maxAlternatives = 1;
+            rec.onstart = () => { isListening = true; voiceOverlay.classList.add('active'); voiceStatus.textContent = 'Listening…'; };
+            rec.onresult = (event) => {
+                let finalText = '', interim = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const t = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) finalText += t; else interim += t;
+                }
+                voiceStatus.textContent = finalText || interim || 'Listening…';
+                if (finalText) { setTimeout(() => { stopListening(); goToSearch(finalText.trim()); }, 400); }
+            };
+            rec.onerror = (event) => {
+                if (event.error === 'not-allowed') voiceStatus.textContent = 'Microphone permission denied.';
+                else if (event.error === 'no-speech') voiceStatus.textContent = 'No speech detected. Try again.';
+                else voiceStatus.textContent = 'Error: ' + event.error;
+                setTimeout(() => { if (isListening) stopListening(); }, 1800);
+            };
+            rec.onend = () => { if (isListening) stopListening(); };
+            return rec;
+        }
+        function startListening() {
+            if (!recognition) recognition = setupRecognition();
+            if (!recognition) {
+                voiceOverlay.classList.add('active');
+                voiceStatus.textContent = 'Voice search is not supported.';
+                setTimeout(stopListening, 2500);
+                return;
+            }
+            try { recognition.start(); } catch (e) {}
+        }
+        function stopListening() {
+            isListening = false;
+            voiceOverlay.classList.remove('active');
+            try { recognition && recognition.stop(); } catch (e) {}
+        }
+        
+        document.getElementById('desktopVoiceSearchBtn')?.addEventListener('click', startListening);
+        document.getElementById('mobileVoiceSearchBtn')?.addEventListener('click', startListening);
+        document.getElementById('mobileVoiceSearchOverlayBtn')?.addEventListener('click', startListening);
+        voiceCancelBtn?.addEventListener('click', stopListening);
+        voiceOverlay?.addEventListener('click', (e) => { if (e.target === voiceOverlay) stopListening(); });
+    </script>
+</body>
+</html>

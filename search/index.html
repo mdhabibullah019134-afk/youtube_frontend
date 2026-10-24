@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - YouTube</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg: #0f0f0f; --text: #f1f1f1; --text-sub: #aaa; --hover: #272727; --border: #303030; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 56px; position: fixed; width: 100%; background: var(--bg); z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .icon-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { background: var(--hover); }
+        .logo { display: flex; align-items: center; font-size: 20px; font-weight: bold; letter-spacing: -1px; color: var(--text); text-decoration: none; }
+        .logo i { color: #ff0000; font-size: 28px; margin-right: 4px; }
+        .header-center { display: flex; align-items: center; flex: 1; max-width: 700px; margin: 0 20px; gap: 16px; }
+        .search-box { display: flex; flex: 1; background: #121212; border: 1px solid var(--border); border-radius: 40px; height: 40px; overflow: hidden; position: relative; }
+        .search-box input { flex: 1; background: transparent; border: none; color: var(--text); padding: 0 16px; outline: none; }
+        .search-box button { background: #222; border: none; border-left: 1px solid var(--border); padding: 0 20px; color: var(--text); cursor: pointer; }
+        .search-box button:hover { background: #333; }
+        
+        .search-suggestions { position: absolute; top: 44px; left: 0; right: 0; background: #212121; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: none; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.5); max-height: 320px; overflow-y: auto; }
+        .search-suggestions.active { display: block; }
+        .suggestion-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; font-size: 14px; }
+        .suggestion-item:hover, .suggestion-item.highlighted { background: #303030; }
+        .suggestion-item i { color: var(--text-sub); font-size: 14px; }
+        .suggestion-item .suggestion-text { flex: 1; }
+
+        .mobile-actions { display: none; align-items: center; gap: 16px; }
+        .mobile-actions .icon-btn { font-size: 22px; }
+        
+        .mobile-search-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 999; display: none; flex-direction: column; padding: 8px 16px; }
+        .mobile-search-overlay.active { display: flex; }
+        .mobile-search-header { display: flex; align-items: center; gap: 12px; height: 48px; }
+        .mobile-search-header .back-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; }
+        .mobile-search-header .search-box { flex: 1; height: 40px; margin: 0; background: #121212; border: none; border-radius: 8px; }
+        .mobile-search-header .search-box input { padding: 0 12px; font-size: 16px; }
+        .mobile-search-header .search-box button { background: transparent; border: none; padding: 0 12px; font-size: 18px; }
+        .mobile-search-content { flex: 1; overflow-y: auto; margin-top: 8px; }
+
+        .voice-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .voice-overlay.active { display: flex; }
+        .voice-overlay-inner { background: #212121; padding: 32px 40px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; min-width: 280px; }
+        .voice-overlay-inner p { font-size: 18px; font-weight: 500; }
+        .voice-wave { display: flex; align-items: center; gap: 6px; height: 40px; }
+        .voice-wave span { width: 6px; background: #ff0000; border-radius: 3px; animation: voicePulse 0.8s ease-in-out infinite; }
+        .voice-wave span:nth-child(1) { height: 16px; animation-delay: 0s; }
+        .voice-wave span:nth-child(2) { height: 32px; animation-delay: 0.15s; }
+        .voice-wave span:nth-child(3) { height: 40px; animation-delay: 0.3s; }
+        .voice-wave span:nth-child(4) { height: 32px; animation-delay: 0.45s; }
+        .voice-wave span:nth-child(5) { height: 16px; animation-delay: 0.6s; }
+        @keyframes voicePulse { 0%, 100% { transform: scaleY(0.5); opacity: 0.6; } 50% { transform: scaleY(1.2); opacity: 1; } }
+        .voice-cancel { background: none; border: 1px solid var(--border); color: var(--text); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+        .voice-cancel:hover { background: var(--hover); }
+        .voice-mic-active { background: #ff0000 !important; color: white !important; }
+
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; margin-left: 8px; }
+
+        /* Overlay for Sidebar */
+        .overlay { position: fixed; top: 56px; left: 0; width: 100%; height: calc(100% - 56px); background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar { width: 72px; background: var(--bg); display: flex; flex-direction: column; padding-top: 12px; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; position: fixed; top: 56px; bottom: 0; left: 0; z-index: 95; transition: width 0.3s cubic-bezier(0.2,0,0,1), box-shadow 0.3s; }
+        .sidebar.expanded { width: 240px; box-shadow: 4px 0 15px rgba(0,0,0,0.5); }
+        
+        .sidebar-item { display: flex; align-items: center; padding: 10px 12px; margin: 0 8px; border-radius: 10px; color: var(--text); text-decoration: none; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 40px; gap: 24px; }
+        .sidebar-item:hover { background: var(--hover); }
+        .sidebar-item i { font-size: 20px; min-width: 24px; text-align: center; }
+        .sidebar-item span { display: none; font-size: 14px; }
+        
+        .sidebar.expanded .sidebar-item span { display: block; }
+        .sidebar.expanded .sidebar-item { flex-direction: row; height: auto; padding: 10px 12px; }
+        .sidebar:not(.expanded) .sidebar-item { flex-direction: column; gap: 6px; padding: 16px 0; margin: 0; border-radius: 0; font-size: 10px; height: auto; }
+        .sidebar:not(.expanded) .sidebar-item span { display: block; font-size: 10px; }
+
+        .content { margin-top: 56px; margin-left: 72px; height: calc(100vh - 56px); overflow-y: auto; padding: 24px; }
+        .content::-webkit-scrollbar { width: 8px; }
+        .content::-webkit-scrollbar-thumb { background: #717171; border-radius: 4px; }
+
+        .result-heading { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+        .result-heading span { color: var(--text-sub); font-weight: 400; font-size: 14px; }
+
+        .search-result { display: flex; gap: 16px; margin-bottom: 16px; padding: 8px; border-radius: 12px; text-decoration: none; color: inherit; cursor: pointer; }
+        .search-result:hover { background: #1c1c1c; }
+        .result-thumb { position: relative; width: 360px; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #222; flex-shrink: 0; }
+        .result-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .result-duration { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.8); color: white; font-size: 12px; padding: 2px 4px; border-radius: 4px; }
+        .result-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .result-title { font-size: 18px; font-weight: 500; line-height: 1.4; }
+        .result-channel { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
+        .result-channel img { width: 24px; height: 24px; border-radius: 50%; }
+        .result-meta { font-size: 13px; color: var(--text-sub); }
+        .result-desc { font-size: 13px; color: var(--text-sub); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .no-results { text-align: center; padding: 60px 20px; color: var(--text-sub); }
+        .no-results i { font-size: 48px; margin-bottom: 16px; }
+
+        @media (max-width: 768px) {
+            .header-center { display: none; }
+            .header-right .avatar { display: none; }
+            .mobile-actions { display: flex; margin-left: auto; margin-right: 8px; }
+            
+            /* Mobile Sidebar Behavior */
+            .sidebar { display: none; }
+            .sidebar.expanded { display: flex; }
+            
+            .content { margin-left: 0; padding: 12px; }
+            .search-result { flex-direction: column; }
+            .result-thumb { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay for Sidebar -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" id="hamburger-btn"><i class="fa-solid fa-bars"></i></button>
+            <a href="index.html" class="logo"><i class="fa-brands fa-youtube"></i> YouTube</a>
+        </div>
+        
+        <div class="header-center">
+            <div class="search-box" id="desktopSearchBox">
+                <input type="text" id="desktopSearchInput" placeholder="Search" autocomplete="off">
+                <button id="desktopSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <div class="search-suggestions" id="desktopSearchSuggestions"></div>
+            </div>
+            <button class="icon-btn" id="desktopVoiceSearchBtn"><i class="fa-solid fa-microphone"></i></button>
+        </div>
+
+        <div class="mobile-actions">
+            <button class="icon-btn" id="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="icon-btn" id="mobileVoiceSearchBtn"><i class="fa-solid fa-microphone"></i></button>
+            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User" style="margin-left: 0;">
+        </div>
+
+        <div class="header-right">
+            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
+        </div>
+    </header>
+
+    <!-- Mobile Search Overlay -->
+    <div class="mobile-search-overlay" id="mobileSearchOverlay">
+        <div class="mobile-search-header">
+            <button class="back-btn" id="mobileSearchClose"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="search-box">
+                <input type="text" id="mobileSearchInput" placeholder="Search" autocomplete="off">
+                <button id="mobileSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <button class="icon-btn" id="mobileVoiceSearchOverlayBtn" style="padding: 8px;"><i class="fa-solid fa-microphone"></i></button>
+        </div>
+        <div class="mobile-search-content" id="mobileSearchSuggestions"></div>
+    </div>
+
+    <!-- Voice Search Overlay -->
+    <div class="voice-overlay" id="voiceOverlay">
+        <div class="voice-overlay-inner">
+            <p id="voiceStatus">Listening…</p>
+            <div class="voice-wave"><span></span><span></span><span></span><span></span><span></span></div>
+            <button class="voice-cancel" id="voiceCancelBtn">Cancel</button>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <a href="index.html" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family</span></a>
+        <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
+        <a href="#" class="sidebar-item"><i class="fa-solid fa-star"></i><span>Highlights</span></a>
+    </aside>
+
+    <main class="content">
+        <div class="result-heading" id="resultHeading">Search results</div>
+        <div id="resultsContainer"></div>
+    </main>
+
+    <script>
+        const videos = [
+            { id: "hvL1339luv0", title: "BABA YAGA | PART 01 | A Horror Story | Bangla Cartoon", author: "Rupali Pordar Anime", views: "1.2M views", time: "1 month ago", duration: "1:00:10", avatar: "Rupali" },
+            { id: "0e3GPea1Tyg", title: "$456,000 Squid Game In Real Life!", author: "MrBeast", views: "500M views", time: "2 years ago", duration: "25:42", avatar: "MrBeast" },
+            { id: "JpV84jE41w8", title: "MESSI GANA! TOP 5 OFICIAL 2026", author: "OFICIAL YA", views: "76K views", time: "13d ago", duration: "12:31", avatar: "Messi" },
+            { id: "3jL5oX2xP7c", title: "মেয়েদের স্বাস্থ্য নিয়ে কিছু কথা | Tasnim Jara", author: "Tasnim Jara", views: "1.5M views", time: "3 years ago", duration: "10:15", avatar: "Tasnim" },
+            { id: "9bZkp7q19f0", title: "PSY - GANGNAM STYLE(강남스타일) M/V", author: "officialpsy", views: "5B views", time: "11 years ago", duration: "4:12", avatar: "PSY" },
+            { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up", author: "Rick Astley", views: "1.5B views", time: "14 years ago", duration: "3:32", avatar: "Rick" },
+            { id: "kJQP7kiw5Fk", title: "Luis Fonsi - Despacito ft. Daddy Yankee", author: "Luis Fonsi", views: "8B views", time: "6 years ago", duration: "4:42", avatar: "Luis" },
+            { id: "JGwWNGJdvx8", title: "Ed Sheeran - Shape of You", author: "Ed Sheeran", views: "6B views", time: "7 years ago", duration: "4:23", avatar: "Ed" },
+            { id: "RgKAFK5djSk", title: "Wiz Khalifa - See You Again ft. Charlie Puth", author: "Wiz Khalifa", views: "6B views", time: "8 years ago", duration: "3:57", avatar: "Wiz" },
+            { id: "OPf0YbXqDm0", title: "Mark Ronson - Uptown Funk ft. Bruno Mars", author: "Mark Ronson", views: "4.5B views", time: "9 years ago", duration: "4:30", avatar: "Mark" },
+            { id: "fJ9rUzIMcZQ", title: "Queen - Bohemian Rhapsody (Official Video)", author: "Queen Official", views: "1.8B views", time: "15 years ago", duration: "5:59", avatar: "Queen" },
+            { id: "hTWKbfoikeg", title: "Nirvana - Smells Like Teen Spirit", author: "Nirvana", views: "1.7B views", time: "14 years ago", duration: "5:01", avatar: "Nirvana" }
+        ];
+
+        const params = new URLSearchParams(window.location.search);
+        const query = (params.get('q') || '').trim();
+        
+        // Sidebar Elements
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        hamburgerBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+            overlay.classList.toggle('active');
+        });
+
+        function closeSidebar() {
+            sidebar.classList.remove('expanded');
+            overlay.classList.remove('active');
+        }
+
+        // Desktop Elements
+        const desktopSearchInput = document.getElementById('desktopSearchInput');
+        const desktopSearchBtn = document.getElementById('desktopSearchBtn');
+        const desktopSearchSuggestions = document.getElementById('desktopSearchSuggestions');
+        const desktopVoiceSearchBtn = document.getElementById('desktopVoiceSearchBtn');
+        
+        // Mobile Elements
+        const mobileSearchToggle = document.getElementById('mobileSearchToggle');
+        const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
+        const mobileSearchClose = document.getElementById('mobileSearchClose');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const mobileSearchSuggestions = document.getElementById('mobileSearchSuggestions');
+        const mobileVoiceSearchBtn = document.getElementById('mobileVoiceSearchBtn');
+        const mobileVoiceSearchOverlayBtn = document.getElementById('mobileVoiceSearchOverlayBtn');
+
+        // Voice Elements
+        const voiceOverlay = document.getElementById('voiceOverlay');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const voiceCancelBtn = document.getElementById('voiceCancelBtn');
+
+        // Common Elements
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultHeading = document.getElementById('resultHeading');
+
+        if (desktopSearchInput) desktopSearchInput.value = query;
+        if (mobileSearchInput) mobileSearchInput.value = query;
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function renderResults() {
+            const q = query.toLowerCase();
+            const matches = q ? videos.filter(v => v.title.toLowerCase().includes(q) || v.author.toLowerCase().includes(q)) : [];
+
+            if (!q) {
+                resultHeading.innerHTML = 'Search results';
+                resultsContainer.innerHTML = `<div class="no-results"><i class="fa-solid fa-magnifying-glass"></i><p>Type something in the search bar to find videos.</p></div>`;
+                return;
+            }
+
+            resultHeading.innerHTML = `Search results for "<span>${escapeHtml(query)}</span>" <span>(${matches.length})</span>`;
+
+            if (!matches.length) {
+                resultsContainer.innerHTML = `<div class="no-results"><i class="fa-solid fa-circle-exclamation"></i><p>No results found for "${escapeHtml(query)}".<br>Try different keywords.</p></div>`;
+                return;
+            }
+
+            resultsContainer.innerHTML = matches.map(v => `
+                <a class="search-result" href="watch.html?v=${v.id}">
+                    <div class="result-thumb">
+                        <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="Thumb">
+                        <span class="result-duration">${v.duration}</span>
+                    </div>
+                    <div class="result-info">
+                        <div class="result-title">${escapeHtml(v.title)}</div>
+                        <div class="result-meta">${v.views} • ${v.time}</div>
+                        <div class="result-channel">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(v.avatar)}&background=random" alt="Avatar">
+                            <span>${escapeHtml(v.author)}</span>
+                            <i class="fa-solid fa-circle-check" style="font-size:10px;"></i>
+                        </div>
+                        <div class="result-desc">Watch ${escapeHtml(v.title)} on YouTube. ${v.author} · ${v.views} · ${v.time}.</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+        renderResults();
+
+        /* SEARCH LOGIC */
+        const suggestionPool = [
+            'bangla cartoon', 'horror story bangla', 'squid game', 'messi 2026',
+            'tasnim jara', 'gangnam style', 'rick astley', 'despacito',
+            'shape of you', 'uptown funk', 'bohemian rhapsody', 'islamic lecture'
+        ];
+
+        function goToSearch(q) {
+            q = (q || '').trim();
+            if (q) window.location.href = 'search.html?q=' + encodeURIComponent(q);
+        }
+
+        function renderSuggestions(value, container) {
+            const v = value.trim().toLowerCase();
+            if (!v) { container.classList.remove('active'); container.innerHTML = ''; return; }
+            const matches = suggestionPool.filter(s => s.includes(v)).slice(0, 8);
+            if (!matches.length) { container.classList.remove('active'); container.innerHTML = ''; return; }
+            container.innerHTML = matches.map(m => `
+                <div class="suggestion-item" data-value="${m.replace(/"/g, '&quot;')}">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span class="suggestion-text">${m}</span>
+                    <i class="fa-solid fa-arrow-up-left" style="font-size:11px;"></i>
+                </div>
+            `).join('');
+            container.classList.add('active');
+        }
+
+        // Desktop Listeners
+        desktopSearchInput?.addEventListener('input', (e) => renderSuggestions(e.target.value, desktopSearchSuggestions));
+        desktopSearchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); goToSearch(desktopSearchInput.value); }
+        });
+        desktopSearchBtn?.addEventListener('click', () => goToSearch(desktopSearchInput.value));
+        desktopSearchSuggestions?.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if (item) goToSearch(item.dataset.value);
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#desktopSearchBox')) desktopSearchSuggestions?.classList.remove('active');
+        });
+
+        // Mobile Listeners
+        mobileSearchToggle?.addEventListener('click', () => {
+            mobileSearchOverlay.classList.add('active');
+            setTimeout(() => mobileSearchInput.focus(), 100);
+        });
+        mobileSearchClose?.addEventListener('click', () => {
+            mobileSearchOverlay.classList.remove('active');
+            mobileSearchInput.value = '';
+            mobileSearchSuggestions.innerHTML = '';
+        });
+        mobileSearchInput?.addEventListener('input', (e) => renderSuggestions(e.target.value, mobileSearchSuggestions));
+        mobileSearchInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); goToSearch(mobileSearchInput.value); }
+        });
+        mobileSearchBtn?.addEventListener('click', () => goToSearch(mobileSearchInput.value));
+        mobileSearchSuggestions?.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if (item) goToSearch(item.dataset.value);
+        });
+
+        /* VOICE SEARCH LOGIC */
+        let recognition = null;
+        let isListening = false;
+
+        function setupRecognition() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) return null;
+            const rec = new SR();
+            rec.lang = 'bn-BD'; rec.continuous = false; rec.interimResults = true;
+            rec.onstart = () => { isListening = true; voiceOverlay.classList.add('active'); voiceStatus.textContent = 'Listening…'; };
+            rec.onresult = (event) => {
+                let finalText = '', interim = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const t = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) finalText += t; else interim += t;
+                }
+                voiceStatus.textContent = finalText || interim || 'Listening…';
+                if (finalText) { setTimeout(() => { stopListening(); goToSearch(finalText.trim()); }, 400); }
+            };
+            rec.onerror = (event) => {
+                if (event.error === 'not-allowed') voiceStatus.textContent = 'Microphone permission denied.';
+                else if (event.error === 'no-speech') voiceStatus.textContent = 'No speech detected. Try again.';
+                else voiceStatus.textContent = 'Error: ' + event.error;
+                setTimeout(() => { if (isListening) stopListening(); }, 1800);
+            };
+            rec.onend = () => { if (isListening) stopListening(); };
+            return rec;
+        }
+        function startListening() {
+            if (!recognition) recognition = setupRecognition();
+            if (!recognition) {
+                voiceOverlay.classList.add('active');
+                voiceStatus.textContent = 'Voice search is not supported.';
+                setTimeout(stopListening, 2500);
+                return;
+            }
+            try { recognition.start(); } catch (e) {}
+        }
+        function stopListening() {
+            isListening = false;
+            voiceOverlay.classList.remove('active');
+            try { recognition && recognition.stop(); } catch (e) {}
+        }
+
+        desktopVoiceSearchBtn?.addEventListener('click', startListening);
+        mobileVoiceSearchBtn?.addEventListener('click', startListening);
+        mobileVoiceSearchOverlayBtn?.addEventListener('click', startListening);
+        voiceCancelBtn?.addEventListener('click', stopListening);
+        voiceOverlay?.addEventListener('click', (e) => { if (e.target === voiceOverlay) stopListening(); });
+    </script>
+</body>
+</html>
