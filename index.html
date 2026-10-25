@@ -117,6 +117,64 @@
         .chip { background: var(--hover); color: var(--text); border: none; padding: 6px 12px; border-radius: 8px; font-weight: 500; white-space: nowrap; cursor: pointer; }
         .chip.active { background: var(--text); color: var(--bg); }
 
+        /* Family / Events / Timeline views */
+        .view-title { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 500; padding: 20px 0 12px; }
+        .view-title i { color: #3ea6ff; }
+        .filter-bar.static { position: static; padding-top: 0; }
+        .family-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding-top: 8px; }
+        .family-card { background: #1a1a1a; border: 1px solid var(--border); border-radius: 16px; padding: 24px 16px; text-align: center; transition: 0.2s; }
+        .family-card:hover { background: var(--hover); transform: translateY(-2px); }
+        .family-card img { width: 96px; height: 96px; border-radius: 50%; margin-bottom: 12px; }
+        .family-card h3 { font-size: 16px; font-weight: 500; }
+        .family-card .relation { font-size: 13px; color: #3ea6ff; margin: 4px 0; }
+        .family-card .note { font-size: 12px; color: var(--text-sub); }
+        .event-list { display: flex; flex-direction: column; gap: 12px; max-width: 800px; }
+        .event-card { display: flex; gap: 16px; align-items: center; background: #1a1a1a; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; transition: 0.2s; }
+        .event-card:hover { background: var(--hover); }
+        .event-date { min-width: 64px; text-align: center; background: var(--hover); border-radius: 12px; padding: 8px 6px; }
+        .event-date .day { font-size: 24px; font-weight: 700; line-height: 1; }
+        .event-date .mon { font-size: 12px; color: var(--text-sub); text-transform: uppercase; margin-top: 4px; }
+        .event-body { flex: 1; min-width: 0; }
+        .event-body h3 { font-size: 16px; font-weight: 500; }
+        .event-body p { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+        .event-tag { font-size: 11px; padding: 3px 10px; border-radius: 12px; background: #263850; color: #3ea6ff; white-space: nowrap; }
+        .event-tag.past { background: #2a2a2a; color: var(--text-sub); }
+        .empty-note { color: var(--text-sub); padding: 24px 0; }
+        .timeline { position: relative; max-width: 800px; padding: 8px 0 8px 28px; border-left: 2px solid var(--border); margin-left: 8px; }
+        .tl-item { position: relative; margin-bottom: 24px; }
+        .tl-item::before { content: ""; position: absolute; left: -37px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: #3ea6ff; border: 3px solid var(--bg); }
+        .tl-year { font-size: 13px; font-weight: 700; color: #3ea6ff; }
+        .tl-item h3 { font-size: 16px; font-weight: 500; margin: 2px 0 4px; }
+        .tl-item p { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
+        @media (max-width: 768px) { .view-title { padding-top: 12px; } .event-card { flex-wrap: wrap; } }
+
+        .view-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; max-width: 900px; }
+        .clear-history-btn { display: flex; user-select: none; align-items: center; gap: 8px; margin-top: 8px; background: var(--hover); color: var(--text); border: 1px solid var(--border); padding: 8px 14px; border-radius: 18px; font-size: 13px; cursor: pointer; }
+        .clear-history-btn:hover { background: #3a2020; border-color: #ff6b6b; color: #ff9a9a; }
+        .hist-day { font-size: 16px; font-weight: 600; margin: 20px 0 10px; max-width: 900px; }
+        .hist-item { display: flex; gap: 14px; align-items: flex-start; max-width: 900px; padding: 8px; border-radius: 12px; text-decoration: none; color: inherit; position: relative; transition: background .2s; }
+        .hist-item:hover { background: var(--hover); }
+        .hist-thumb { position: relative; width: 200px; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #222; flex-shrink: 0; }
+        .hist-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .hist-thumb .duration { bottom: 6px; right: 6px; }
+        .hist-short-badge { position: absolute; top: 6px; left: 6px; background: #f03; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+        .hist-info { flex: 1; min-width: 0; padding-right: 32px; }
+        .hist-info h3 { font-size: 16px; font-weight: 500; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hist-info .meta { font-size: 13px; color: var(--text-sub); margin-top: 6px; }
+        .hist-remove { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; color: var(--text-sub); cursor: pointer; font-size: 15px; }
+        .hist-remove:hover { background: #3f3f3f; color: var(--text); }
+        @media (max-width: 768px) { .hist-thumb { width: 140px; } .hist-info h3 { font-size: 14px; } }
+        /* Your uploads */
+        .uploads-head { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; padding: 16px 0 4px; }
+        .uploads-head i { color: #8b5cf6; }
+        .uploads-head small { font-size: 12px; font-weight: 400; color: var(--text-sub); }
+        .up-del { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(0,0,0,.7); color: #fff; cursor: pointer; font-size: 13px; display: grid; place-items: center; opacity: 0; transition: .2s; z-index: 3; }
+        .thumb-box:hover .up-del, .short-thumb-box:hover .up-del { opacity: 1; }
+        .up-del:hover { background: #e11d48; }
+        @media (hover: none) { .up-del { opacity: 1; } }
+        .uploads-shorts .shorts-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .short-thumb-box { position: relative; }
+        .shorts-slide video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
         /* Video Grid */
         .video-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 16px; padding-top: 12px; width: 100%; }
         .video-card { cursor: pointer; display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: inherit; }
@@ -209,6 +267,11 @@
             .shorts-container { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="popup.css">
+    <script src="history.js"></script>
+    <link rel="stylesheet" href="upload.css">
+    <script src="upload.js"></script>
 </head>
 <body>
 
@@ -238,7 +301,7 @@
         </div>
 
         <div class="header-right">
-            <button class="create-btn"><i class="fa-solid fa-plus"></i> Create</button>
+            <button class="create-btn" data-create><i class="fa-solid fa-plus"></i> Create</button>
             <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="notif-badge">9+</span></button>
             <img data-auth-avatar src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
         </div>
@@ -268,12 +331,11 @@
 
     <div class="main-container">
         <aside class="sidebar" id="sidebar">
-            <a href="#" class="sidebar-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family Members</span></a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-star"></i><span>Highlights</span></a>
-            <a href="#" class="sidebar-item"><i class="fa-solid fa-heart"></i><span>Favorites</span></a>
+            <a href="#home" class="sidebar-item active" data-view="home"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="#family" class="sidebar-item" data-view="family"><i class="fa-solid fa-users"></i><span class="lbl-short">Family</span><span class="lbl-full">Family Members</span></a>
+            <a href="#events" class="sidebar-item" data-view="events"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
+            <a href="#timeline" class="sidebar-item" data-view="timeline"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
+            <a href="#history" class="sidebar-item" data-view="history"><i class="fa-solid fa-clock-rotate-left"></i><span>History</span></a>
         </aside>
 
         <main class="page-view active-view" id="home-page">
@@ -283,8 +345,67 @@
                 <button class="chip">photos</button>
                 <button class="chip">post</button>
             </div>
+            <div id="uploadsArea"></div>
             <div id="dynamic-content"></div>
         </main>
+
+        <main class="page-view" id="family-page">
+            <h2 class="view-title"><i class="fa-solid fa-users"></i> Family Members</h2>
+            <div class="family-grid" id="familyGrid"></div>
+        </main>
+
+        <main class="page-view" id="events-page">
+            <h2 class="view-title"><i class="fa-solid fa-calendar-days"></i> Events</h2>
+            <div class="filter-bar static">
+                <button class="chip active" data-ev="all">All</button>
+                <button class="chip" data-ev="upcoming">Upcoming</button>
+                <button class="chip" data-ev="past">Past</button>
+            </div>
+            <div class="event-list" id="eventList"></div>
+        </main>
+
+        <main class="page-view" id="timeline-page">
+            <h2 class="view-title"><i class="fa-solid fa-timeline"></i> Timeline</h2>
+            <div class="timeline" id="timelineList"></div>
+        </main>
+
+        <main class="page-view" id="history-page">
+            <div class="view-title-row">
+                <h2 class="view-title"><i class="fa-solid fa-clock-rotate-left"></i> Watch History</h2>
+                <label for="clearPopupToggle" class="clear-history-btn" id="clearHistoryBtn"><i class="fa-regular fa-trash-can"></i> Clear all history</label>
+            </div>
+            <div id="historyList"></div>
+        </main>
+    </div>
+
+    <!-- CSS-only confirm popup -->
+    <input type="checkbox" id="clearPopupToggle" class="css-popup-toggle">
+    <div class="css-popup" role="dialog" aria-modal="true">
+        <label for="clearPopupToggle" class="css-popup-backdrop"></label>
+        <div class="css-popup-card">
+            <div class="css-popup-icon danger"><i class="fa-regular fa-trash-can"></i></div>
+            <div class="css-popup-title">Clear watch history?</div>
+            <p class="css-popup-text">এতে আপনার দেখা সব ভিডিও ও শর্টসের হিস্ট্রি মুছে যাবে।</p>
+            <div class="css-popup-actions">
+                <label for="clearPopupToggle" class="css-popup-btn">Cancel</label>
+                <label for="clearPopupToggle" class="css-popup-btn danger" id="confirmClearBtn">Clear</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSS-only delete popup (uploads) -->
+    <input type="checkbox" id="delPopupToggle" class="css-popup-toggle">
+    <div class="css-popup" role="dialog" aria-modal="true">
+        <label for="delPopupToggle" class="css-popup-backdrop"></label>
+        <div class="css-popup-card">
+            <div class="css-popup-icon danger"><i class="fa-regular fa-trash-can"></i></div>
+            <div class="css-popup-title">Delete this upload?</div>
+            <p class="css-popup-text">ভিডিওটি এই ব্রাউজার থেকে স্থায়ীভাবে মুছে যাবে।</p>
+            <div class="css-popup-actions">
+                <label for="delPopupToggle" class="css-popup-btn">Cancel</label>
+                <label for="delPopupToggle" class="css-popup-btn danger" id="confirmDeleteBtn">Delete</label>
+            </div>
+        </div>
     </div>
 
     <!-- Shorts Popup Modal -->
@@ -438,6 +559,10 @@
         const shortsFrame = document.getElementById('shortsFrame');
         const shortTitle = document.getElementById('shortTitle');
         let currentShortIndex = 0;
+        let shortsBase = 0;
+        function recordShort(id, title) {
+            if (window.YTHistory) YTHistory.add({ id: id, title: title || 'Short video', author: 'Shorts', avatar: 'Shorts', duration: '', type: 'short' });
+        }
         let shortSlides = [];
 
         function buildShortSlide(videoId, autoplay) {
@@ -451,7 +576,7 @@
             return { slide, iframe, videoId };
         }
         function setTitleByIndex(index) {
-            const s = shortsData[index % shortsData.length];
+            const s = shortsData[(shortsBase + index) % shortsData.length];
             if (s) shortTitle.textContent = s.title || "Viral Short Video";
         }
         function pauseOthers(activeIndex) {
@@ -467,6 +592,8 @@
         }
         function openShortsModal(videoId, title) {
             shortsScroll.innerHTML = ''; shortSlides = []; currentShortIndex = 0;
+            shortsBase = Math.max(0, shortsData.findIndex(s => s.id === videoId));
+            recordShort(videoId, title || (shortsData[shortsBase] && shortsData[shortsBase].title));
             const first = buildShortSlide(videoId, true);
             shortsScroll.appendChild(first.slide); shortSlides.push(first);
             const nextIdx = (shortsData.findIndex(s => s.id === videoId) + 1) % shortsData.length;
@@ -491,17 +618,18 @@
             if (newIndex === currentShortIndex) return;
             currentShortIndex = newIndex;
             if (!shortSlides[newIndex]) {
-                const data = shortsData[newIndex % shortsData.length];
+                const data = shortsData[(shortsBase + newIndex) % shortsData.length];
                 const built = buildShortSlide(data.id, false);
                 shortsScroll.appendChild(built.slide); shortSlides[newIndex] = built;
             }
             const lookAhead = newIndex + 1;
             if (!shortSlides[lookAhead]) {
-                const data = shortsData[lookAhead % shortsData.length];
+                const data = shortsData[(shortsBase + lookAhead) % shortsData.length];
                 const built = buildShortSlide(data.id, false);
                 shortsScroll.appendChild(built.slide); shortSlides[lookAhead] = built;
             }
             setTitleByIndex(newIndex); pauseOthers(newIndex); playActive(newIndex);
+            { const cur = shortsData[(shortsBase + newIndex) % shortsData.length]; if (cur) recordShort(cur.id, cur.title); }
             if (newIndex >= 2) {
                 const old = shortSlides[newIndex - 2];
                 if (old && old.slide.parentNode) {
@@ -646,6 +774,218 @@
         document.getElementById('mobileVoiceSearchOverlayBtn')?.addEventListener('click', startListening);
         voiceCancelBtn?.addEventListener('click', stopListening);
         voiceOverlay?.addEventListener('click', (e) => { if (e.target === voiceOverlay) stopListening(); });
+    </script>
+    <script>
+    /* ===== Sidebar views: Home / Family Members / Events / Timeline ===== */
+    /* নিচের ডেটা নমুনা — নিজের তথ্য দিয়ে বদলে নিন */
+    const familyMembers = [
+        { name: "Grandfather", relation: "Dadu", note: "The storyteller of the family" },
+        { name: "Grandmother", relation: "Dadi", note: "Keeper of the best recipes" },
+        { name: "Father", relation: "Abbu", note: "Always ready to help" },
+        { name: "Mother", relation: "Ammu", note: "The heart of the home" },
+        { name: "Brother", relation: "Bhai", note: "Partner in every adventure" },
+        { name: "Sister", relation: "Apu", note: "Our little organizer" }
+    ];
+    const familyEvents = [
+        { date: "2026-12-25", title: "Winter Family Reunion", place: "Grandparents' house", note: "Everyone gathers for a big lunch." },
+        { date: "2026-11-14", title: "Weekend Picnic", place: "Local park", note: "Games, snacks and photos." },
+        { date: "2026-08-12", title: "Birthday Celebration", place: "At home", note: "Cake, family and lots of memories." },
+        { date: "2026-03-20", title: "Eid Gathering", place: "Village home", note: "Meeting relatives and sharing food." }
+    ];
+    const familyTimeline = [
+        { year: "2026", title: "A new little member joins the family", text: "A year full of joy, first smiles and lots of photos." },
+        { year: "2025", title: "A new chapter begins", text: "Big changes, new home and new routines." },
+        { year: "2022", title: "Family trip", text: "A memorable journey together." },
+        { year: "2018", title: "Reunion at the old house", text: "Three generations under one roof." }
+    ];
+
+    (function () {
+        const views = ['home', 'family', 'events', 'timeline', 'history'];
+        const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+        document.getElementById('familyGrid').innerHTML = familyMembers.map(m => `
+            <div class="family-card">
+                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=random&size=192" alt="${esc(m.name)}">
+                <h3>${esc(m.name)}</h3>
+                <div class="relation">${esc(m.relation)}</div>
+                <div class="note">${esc(m.note)}</div>
+            </div>`).join('');
+
+        document.getElementById('timelineList').innerHTML = familyTimeline.map(t => `
+            <div class="tl-item">
+                <div class="tl-year">${esc(t.year)}</div>
+                <h3>${esc(t.title)}</h3>
+                <p>${esc(t.text)}</p>
+            </div>`).join('');
+
+        function renderEvents(filter) {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const list = familyEvents
+                .map(e => ({ ...e, d: new Date(e.date + 'T00:00:00') }))
+                .filter(e => filter === 'all' || (filter === 'upcoming' ? e.d >= today : e.d < today))
+                .sort((a, b) => filter === 'past' ? b.d - a.d : (filter === 'upcoming' ? a.d - b.d : b.d - a.d));
+            document.getElementById('eventList').innerHTML = list.length ? list.map(e => `
+                <div class="event-card">
+                    <div class="event-date"><div class="day">${e.d.getDate()}</div><div class="mon">${e.d.toLocaleString('en-GB', { month: 'short' })} ${e.d.getFullYear()}</div></div>
+                    <div class="event-body"><h3>${esc(e.title)}</h3><p><i class="fa-solid fa-location-dot"></i> ${esc(e.place)} · ${esc(e.note)}</p></div>
+                    <span class="event-tag ${e.d >= today ? '' : 'past'}">${e.d >= today ? 'Upcoming' : 'Past'}</span>
+                </div>`).join('') : '<div class="empty-note">No events here yet.</div>';
+        }
+        renderEvents('all');
+        document.querySelectorAll('[data-ev]').forEach(btn => btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-ev]').forEach(b => b.classList.toggle('active', b === btn));
+            renderEvents(btn.dataset.ev);
+        }));
+
+
+        /* ---- History view ---- */
+        function renderHistory() {
+            const box = document.getElementById('historyList');
+            const list = (window.YTHistory ? YTHistory.get() : []);
+            document.getElementById('clearHistoryBtn').style.display = list.length ? '' : 'none';
+            if (!list.length) { box.innerHTML = '<div class="empty-note">No watch history yet. Videos you watch will show up here.</div>'; return; }
+            const startOfDay = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+            const today = startOfDay(Date.now()), day = 86400000;
+            const label = t => { const s = startOfDay(t); return s === today ? 'Today' : s === today - day ? 'Yesterday' : new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); };
+            let html = '', last = '';
+            list.forEach(v => {
+                const l = label(v.watchedAt);
+                if (l !== last) { html += `<div class="hist-day">${l}</div>`; last = l; }
+                const time = new Date(v.watchedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                html += `
+                <a class="hist-item" ${v.local ? (v.type === 'short' ? `href="#history" data-localshort="${esc(v.id.replace(/^u_/, ''))}"` : `href="watch/?u=${encodeURIComponent(v.id.replace(/^u_/, ''))}"`) : (v.type === 'short' ? `href="#history" data-short="1" data-id="${esc(v.id)}" data-title="${esc(v.title)}"` : `href="watch/?v=${encodeURIComponent(v.id)}"`)}>
+                    <div class="hist-thumb">
+                        <img src="${v.local ? esc(v.thumb || '') : 'https://i.ytimg.com/vi/' + encodeURIComponent(v.id) + '/hqdefault.jpg'}" alt="Thumb">
+                        ${v.type === 'short' ? '<span class="hist-short-badge"><i class="fa-solid fa-bolt"></i> SHORTS</span>' : (v.duration ? `<span class="duration">${esc(v.duration)}</span>` : '')}
+                    </div>
+                    <div class="hist-info">
+                        <h3>${esc(v.title)}</h3>
+                        <div class="meta">${v.author ? esc(v.author) + ' • ' : ''}Watched at ${time}</div>
+                    </div>
+                    <button class="hist-remove" data-id="${esc(v.id)}" title="Remove from history"><i class="fa-solid fa-xmark"></i></button>
+                </a>`;
+            });
+            box.innerHTML = html;
+        }
+        document.getElementById('historyList').addEventListener('click', e => {
+            const ls = e.target.closest('.hist-item[data-localshort]');
+            if (ls && !e.target.closest('.hist-remove')) { e.preventDefault(); openLocalShort(ls.dataset.localshort); return; }
+            const sh = e.target.closest('.hist-item[data-short]');
+            if (sh && !e.target.closest('.hist-remove')) { e.preventDefault(); openShortsModal(sh.dataset.id, sh.dataset.title); return; }
+            const b = e.target.closest('.hist-remove');
+            if (!b) return;
+            e.preventDefault(); e.stopPropagation();
+            YTHistory.remove(b.dataset.id); renderHistory();
+        });
+        document.getElementById('confirmClearBtn').addEventListener('click', () => { YTHistory.clear(); renderHistory(); });
+        window.addEventListener('storage', e => { if (e.key === 'yt_history' && location.hash === '#history') renderHistory(); });
+        window.addEventListener('pageshow', () => { if (location.hash === '#history') renderHistory(); });
+
+        function showView(name) {
+            if (!views.includes(name)) name = 'home';
+            views.forEach(v => document.getElementById(v + '-page').classList.toggle('active-view', v === name));
+            document.querySelectorAll('.sidebar-item[data-view]').forEach(a => a.classList.toggle('active', a.dataset.view === name));
+            if (name === 'history') renderHistory();
+            const pv = document.getElementById(name + '-page'); if (pv) pv.scrollTop = 0;
+            if (typeof closeSidebar === 'function') closeSidebar();
+        }
+        document.querySelectorAll('.sidebar-item[data-view]').forEach(a => a.addEventListener('click', e => {
+            e.preventDefault();
+            const v = a.dataset.view;
+            if (location.hash !== '#' + v) location.hash = v; else showView(v);
+        }));
+        window.addEventListener('hashchange', () => showView(location.hash.slice(1)));
+        showView(location.hash.slice(1));
+    })();
+    </script>
+    <script>
+    /* ===== Your uploads (Home) + local Shorts player ===== */
+    const escH = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    let pendingDeleteId = null;
+    let localShortUrl = null;
+
+    async function renderUploads() {
+        const area = document.getElementById('uploadsArea');
+        if (!area || !window.YTStore) return;
+        let list = [];
+        try { list = await YTStore.getAll(); } catch (e) {}
+        if (!list.length) { area.innerHTML = ''; return; }
+        const longs = list.filter(v => v.kind !== 'short'), shorts = list.filter(v => v.kind === 'short');
+        let html = '';
+        if (longs.length) {
+            html += `<div class="uploads-head"><i class="fa-solid fa-film"></i> Your videos <small>${longs.length}</small></div><div class="video-grid">` +
+                longs.map(v => `
+                <div class="video-card">
+                    <a href="watch/?u=${encodeURIComponent(v.id)}" style="text-decoration:none;">
+                        <div class="thumb-box">
+                            <img src="${v.thumb}" alt="Thumbnail">
+                            <span class="duration">${YTStore.fmtDuration(v.duration)}</span>
+                            <button class="up-del" data-del="${escH(v.id)}" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        </div>
+                    </a>
+                    <div class="video-info">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(v.author)}&background=random" alt="Avatar">
+                        <div class="details">
+                            <a href="watch/?u=${encodeURIComponent(v.id)}" style="text-decoration:none; color:inherit;"><h3>${escH(v.title)}</h3></a>
+                            <p>${escH(v.author)} • ${YTStore.timeAgo(v.createdAt)}</p>
+                        </div>
+                    </div>
+                </div>`).join('') + '</div>';
+        }
+        if (shorts.length) {
+            html += `<div class="shorts-section uploads-shorts"><div class="shorts-header"><div class="shorts-title"><i class="fa-solid fa-bolt"></i> Your Shorts</div><small style="color:var(--text-sub)">${shorts.length}</small></div><div class="shorts-container">` +
+                shorts.map(v => `
+                <div class="short-card" data-short="${escH(v.id)}">
+                    <div class="short-thumb-box">
+                        <img src="${v.thumb}" alt="Short">
+                        <button class="up-del" data-del="${escH(v.id)}" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                    <div class="short-info"><div><h3>${escH(v.title)}</h3><p>${YTStore.timeAgo(v.createdAt)}</p></div></div>
+                </div>`).join('') + '</div></div>';
+        }
+        area.innerHTML = html;
+    }
+
+    document.getElementById('uploadsArea').addEventListener('click', e => {
+        const del = e.target.closest('[data-del]');
+        if (del) { e.preventDefault(); e.stopPropagation(); pendingDeleteId = del.dataset.del; document.getElementById('delPopupToggle').checked = true; return; }
+        const sc = e.target.closest('[data-short]');
+        if (sc) openLocalShort(sc.dataset.short);
+    });
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+        if (!pendingDeleteId) return;
+        const id = pendingDeleteId; pendingDeleteId = null;
+        await YTStore.remove(id);
+        if (window.YTHistory) YTHistory.remove('u_' + id);
+        renderUploads();
+        if (location.hash === '#history' && typeof renderHistory === 'function') renderHistory();
+    });
+    window.addEventListener('yt-uploads-changed', renderUploads);
+
+    async function openLocalShort(id) {
+        const rec = await YTStore.get(id);
+        if (!rec) return;
+        if (localShortUrl) URL.revokeObjectURL(localShortUrl);
+        localShortUrl = URL.createObjectURL(rec.file);
+        shortsScroll.innerHTML = ''; shortSlides = []; currentShortIndex = 0;
+        const slide = document.createElement('div'); slide.className = 'shorts-slide';
+        const v = document.createElement('video');
+        v.src = localShortUrl; v.controls = true; v.autoplay = true; v.loop = true; v.playsInline = true;
+        slide.appendChild(v); shortsScroll.appendChild(slide);
+        shortTitle.textContent = rec.title;
+        shortsModal.classList.add('active');
+        if (window.YTHistory) YTHistory.add({ id: 'u_' + rec.id, title: rec.title, author: rec.author, avatar: rec.author, duration: '', local: true, type: 'short', thumb: rec.thumb });
+    }
+    function handleShortHash() {
+        if (location.hash.indexOf('#short-') === 0) {
+            const id = location.hash.slice(7);
+            history.replaceState(null, '', location.pathname + location.search + '#home');
+            window.dispatchEvent(new HashChangeEvent('hashchange'));
+            openLocalShort(id);
+        }
+    }
+    window.addEventListener('hashchange', handleShortHash);
+    renderUploads(); handleShortHash();
     </script>
     <script src="auth.js"></script>
 </body>

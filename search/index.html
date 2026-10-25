@@ -114,6 +114,9 @@
             .result-thumb { width: 100%; }
         }
     </style>
+    <link rel="stylesheet" href="../sidebar.css">
+    <link rel="stylesheet" href="../upload.css">
+    <script src="../upload.js"></script>
 </head>
 <body>
 
@@ -170,9 +173,10 @@
 
     <aside class="sidebar" id="sidebar">
         <a href="../" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family</span></a>
-        <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
-        <a href="#" class="sidebar-item"><i class="fa-solid fa-star"></i><span>Highlights</span></a>
+        <a href="../#family" class="sidebar-item"><i class="fa-solid fa-users"></i><span class="lbl-short">Family</span><span class="lbl-full">Family Members</span></a>
+        <a href="../#events" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
+        <a href="../#timeline" class="sidebar-item"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
+        <a href="../#history" class="sidebar-item"><i class="fa-solid fa-clock-rotate-left"></i><span>History</span></a>
     </aside>
 
     <main class="content">

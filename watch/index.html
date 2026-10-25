@@ -98,6 +98,8 @@
         .video-player-container { width: 100%; aspect-ratio: 16 / 9; background-color: #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px; position: relative; }
         .video-player-container img, .video-player-container iframe { width: 100%; height: 100%; border: none; display: block; }
         .video-player-container img { object-fit: cover; }
+        .video-player-container video { width: 100%; height: 100%; display: block; background: #000; object-fit: contain; }
+        .local-missing { display: grid; place-items: center; height: 100%; color: #aaa; font-size: 15px; text-align: center; padding: 20px; }
 
         .video-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
         
@@ -162,6 +164,88 @@
             padding-right: 4px;
         }
         
+    /* =========================================
+       Suggested Videos card (shared by Mobile & Desktop)
+       ========================================= */
+    
+    .mobile-suggested-video { 
+        display: flex; 
+        flex-direction: row; 
+        gap: 10px; 
+        margin-bottom: 8px; 
+        text-decoration: none; 
+        color: inherit;
+        padding: 8px 12px;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .mobile-suggested-thumb { 
+        position: relative; 
+        width: 160px; 
+        aspect-ratio: 16/9; 
+        background: #222; 
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    
+    .mobile-suggested-thumb img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+    
+    .mobile-suggested-thumb .duration { 
+        position: absolute; 
+        bottom: 4px; 
+        right: 4px; 
+        background: rgba(0,0,0,0.8); 
+        color: white; 
+        font-size: 12px; 
+        padding: 2px 4px; 
+        border-radius: 4px; 
+    }
+    
+    .mobile-suggested-info { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 2px; 
+        flex: 1;
+        overflow: hidden;
+        padding: 0;
+    }
+    
+    .mobile-suggested-details { 
+        width: 100%;
+    }
+    
+    .mobile-suggested-details h3 { 
+        font-size: 14px; 
+        font-weight: 500; 
+        line-height: 1.4; 
+        margin-bottom: 4px; 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+        overflow: hidden; 
+        color: var(--text-primary);
+    }
+    
+    .mobile-suggested-details .meta { 
+        font-size: 12px; 
+        color: var(--text-secondary); 
+        display: flex; 
+        flex-direction: column; 
+        gap: 2px; 
+    }
+    
+    .mobile-suggested-details .meta span { 
+        display: flex; 
+        align-items: center; 
+        gap: 4px; 
+    }
+
         .suggested-video { 
             display: flex !important; 
             flex-direction: row !important; 
@@ -283,6 +367,36 @@
         .mobile-more-item:hover { background: #3f3f3f; }
 
         /* =========================================
+           Desktop: দুই কলাম আলাদা স্ক্রল (নিচে কখনো ফাঁকা থাকবে না)
+           video-description + comments বাম পাশে, secondary-section ডান পাশে —
+           যেকোনো একটি স্ক্রল করলেও অন্যটি ভিউপোর্ট জুড়ে থাকে।
+           ========================================= */
+        @media (min-width: 1001px) {
+            .content-area { overflow: hidden; }
+            .watch-layout { height: calc(100vh - 56px - 48px); align-items: stretch; }
+            .primary-section,
+            .secondary-section {
+                height: 100%;
+                min-height: 0;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                scrollbar-width: thin;
+                scrollbar-color: transparent transparent;
+            }
+            .primary-section { padding-right: 8px; padding-bottom: 24px; }
+            .secondary-section { padding-bottom: 24px; }
+            .primary-section:hover,
+            .secondary-section:hover { scrollbar-color: #717171 transparent; }
+            .primary-section::-webkit-scrollbar,
+            .secondary-section::-webkit-scrollbar { width: 8px; }
+            .primary-section::-webkit-scrollbar-thumb,
+            .secondary-section::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 4px; }
+            .primary-section:hover::-webkit-scrollbar-thumb,
+            .secondary-section:hover::-webkit-scrollbar-thumb { background-color: #717171; }
+            .secondary-section > * { flex-shrink: 0; }
+        }
+
+        /* =========================================
            Responsive (Mobile View) 
            ========================================= */
         @media (max-width: 1000px) { 
@@ -377,95 +491,18 @@
             .mobile-comment-item img { width: 24px; height: 24px; border-radius: 50%; }
             .mobile-comment-item p { font-size: 13px; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 
-            /* =========================================
-               Mobile Suggested Videos (Thumbnail Left, Text Right)
-               ========================================= */
-            /* মোবাইলে কন্টেইনার শো করবে */
             #mobileSuggestedVideosContainer { display: block; }
-            
-            .mobile-suggested-video { 
-                display: flex; 
-                flex-direction: row; 
-                gap: 10px; 
-                margin-bottom: 8px; 
-                text-decoration: none; 
-                color: inherit;
-                padding: 8px 12px;
-                align-items: flex-start;
-                width: 100%;
-            }
-            
-            .mobile-suggested-thumb { 
-                position: relative; 
-                width: 160px; 
-                aspect-ratio: 16/9; 
-                background: #222; 
-                border-radius: 8px;
-                overflow: hidden;
-                flex-shrink: 0;
-            }
-            
-            .mobile-suggested-thumb img { 
-                width: 100%; 
-                height: 100%; 
-                object-fit: cover; 
-            }
-            
-            .mobile-suggested-thumb .duration { 
-                position: absolute; 
-                bottom: 4px; 
-                right: 4px; 
-                background: rgba(0,0,0,0.8); 
-                color: white; 
-                font-size: 12px; 
-                padding: 2px 4px; 
-                border-radius: 4px; 
-            }
-            
-            .mobile-suggested-info { 
-                display: flex; 
-                flex-direction: column; 
-                gap: 2px; 
-                flex: 1;
-                overflow: hidden;
-                padding: 0;
-            }
-            
-            .mobile-suggested-details { 
-                width: 100%;
-            }
-            
-            .mobile-suggested-details h3 { 
-                font-size: 14px; 
-                font-weight: 500; 
-                line-height: 1.4; 
-                margin-bottom: 4px; 
-                display: -webkit-box; 
-                -webkit-line-clamp: 2; 
-                -webkit-box-orient: vertical; 
-                overflow: hidden; 
-                color: var(--text-primary);
-            }
-            
-            .mobile-suggested-details .meta { 
-                font-size: 12px; 
-                color: var(--text-secondary); 
-                display: flex; 
-                flex-direction: column; 
-                gap: 2px; 
-            }
-            
-            .mobile-suggested-details .meta span { 
-                display: flex; 
-                align-items: center; 
-                gap: 4px; 
-            }
 
             /* Hide desktop secondary section & comments on mobile */
             .secondary-section { display: none; }
             .comments-section { display: none; }
         }
     </style>
+    <link rel="stylesheet" href="../sidebar.css">
+    <link rel="stylesheet" href="../popup.css">
+    <script src="../history.js"></script>
+    <link rel="stylesheet" href="../upload.css">
+    <script src="../upload.js"></script>
 </head>
 <body>
 
@@ -497,7 +534,7 @@
         </div>
 
         <div class="header-right">
-            <button class="create-btn"><i class="fa-solid fa-plus"></i> Create</button>
+            <button class="create-btn" data-create><i class="fa-solid fa-plus"></i> Create</button>
             <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
             <img data-auth-avatar src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" class="avatar">
         </div>
@@ -530,9 +567,10 @@
         
         <aside class="sidebar" id="sidebar">
             <a href="../" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
-            <a href="#" class="nav-item"><i class="fa-solid fa-bolt"></i><span>Shorts</span></a>
-            <a href="#" class="nav-item"><i class="fa-solid fa-tv"></i><span>Subscriptions</span></a>
-            <a href="#" class="nav-item"><i class="fa-regular fa-user"></i><span>You</span></a>
+            <a href="../#family" class="nav-item"><i class="fa-solid fa-users"></i><span class="lbl-short">Family</span><span class="lbl-full">Family Members</span></a>
+            <a href="../#events" class="nav-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
+            <a href="../#timeline" class="nav-item"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
+            <a href="../#history" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>History</span></a>
         </aside>
 
         <main class="content-area">
@@ -712,50 +750,73 @@
                 playerContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${currentVideoId}?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
             }
 
+            // নিজের আপলোড করা ভিডিও (?u=ID)
+            const localId = params.get('u');
+            if (localId && window.YTStore && playerContainer) {
+                YTStore.get(localId).then(rec => {
+                    if (!rec) { playerContainer.innerHTML = '<div class="local-missing">এই ভিডিওটি পাওয়া যায়নি (হয়তো মুছে ফেলা হয়েছে)।</div>'; return; }
+                    playerContainer.innerHTML = '';
+                    const vid = document.createElement('video');
+                    vid.src = URL.createObjectURL(rec.file); vid.controls = true; vid.autoplay = true; vid.playsInline = true;
+                    if (rec.thumb) vid.poster = rec.thumb;
+                    playerContainer.appendChild(vid);
+                    document.title = rec.title;
+                    const t = document.getElementById('videoTitle'); if (t) t.textContent = rec.title;
+                    const av = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(rec.author) + '&background=random';
+                    document.querySelectorAll('.channel-name').forEach(n => { n.childNodes[0].nodeValue = rec.author + ' '; });
+                    document.querySelectorAll('.channel-avatar, .mobile-channel-left img').forEach(i => { i.src = av; });
+                    document.querySelectorAll('.subscribers').forEach(n => { n.textContent = 'Your channel'; });
+                    const desc = document.querySelector('.video-description');
+                    if (desc) {
+                        desc.innerHTML = '';
+                        const meta = document.createElement('div'); meta.className = 'description-meta';
+                        meta.textContent = YTStore.timeAgo(rec.createdAt) + ' • ' + rec.category + ' • ' + YTStore.fmtSize(rec.size);
+                        const body = document.createElement('div'); body.style.cssText = 'white-space:pre-wrap;margin-top:6px;';
+                        body.textContent = rec.description || 'No description.';
+                        desc.appendChild(meta); desc.appendChild(body);
+                    }
+                    if (window.YTHistory) YTHistory.add({ id: 'u_' + rec.id, title: rec.title, author: rec.author, avatar: rec.author, duration: YTStore.fmtDuration(rec.duration), local: true, type: rec.kind === 'short' ? 'short' : 'video', thumb: rec.thumb });
+                }).catch(() => { playerContainer.innerHTML = '<div class="local-missing">ভিডিও লোড করা যায়নি।</div>'; });
+            }
+
+            // History: এই ভিডিওটি দেখার তালিকায় যোগ করা
+            if (currentVideoId && window.YTHistory) {
+                const known = homeVideos.find(v => v.id === currentVideoId);
+                YTHistory.add(known
+                    ? { id: known.id, title: known.title, author: known.author, avatar: known.avatar, duration: known.duration }
+                    : { id: currentVideoId, title: 'YouTube video', author: '', avatar: 'User', duration: '' });
+                if (!known) {
+                    fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + currentVideoId))
+                        .then(r => r.json())
+                        .then(d => YTHistory.update(currentVideoId, { title: d.title, author: d.author_name, avatar: d.author_name }))
+                        .catch(() => {});
+                }
+            }
+
             // 2. Generate Suggested Videos
             const suggestedVideos = homeVideos.filter(v => v.id !== currentVideoId);
             
-            // Desktop layout (Thumbnail left, Text right)
-            if (desktopSuggestedContainer) {
-                desktopSuggestedContainer.innerHTML = suggestedVideos.map(video => `
-                    <a class="suggested-video" href="../watch/?v=${video.id}">
-                        <div class="suggested-thumbnail">
-                            <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="Thumb">
-                            <span class="suggested-duration">${video.duration}</span>
-                        </div>
-                        <div class="suggested-info">
-                            <div class="suggested-title">${video.title}</div>
-                            <a class="suggested-channel" href="../channel/?name=${encodeURIComponent(video.avatar)}" onclick="event.stopPropagation()">
-                                ${video.author} <i class="fa-solid fa-circle-check"></i>
-                            </a>
-                            <div class="suggested-meta">
-                                ${video.views} • ${video.time}
+            // Same card (Thumbnail left, Text right) for Desktop & Mobile
+            const cardHTML = video => `
+                <a class="mobile-suggested-video" href="../watch/?v=${video.id}">
+                    <div class="mobile-suggested-thumb">
+                        <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="Thumb">
+                        <span class="duration">${video.duration}</span>
+                    </div>
+                    <div class="mobile-suggested-info">
+                        <div class="mobile-suggested-details">
+                            <h3>${video.title}</h3>
+                            <div class="meta">
+                                <span>${video.author} <i class="fa-solid fa-circle-check" style="font-size: 10px;"></i></span>
+                                <span>${video.views} • ${video.time}</span>
                             </div>
                         </div>
-                    </a>
-                `).join('');
-            }
-
-            // Mobile layout (Thumbnail left, Text right)
-            if (mobileSuggestedContainer) {
-                mobileSuggestedContainer.innerHTML = suggestedVideos.map(video => `
-                    <a class="mobile-suggested-video" href="../watch/?v=${video.id}">
-                        <div class="mobile-suggested-thumb">
-                            <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="Thumb">
-                            <span class="duration">${video.duration}</span>
-                        </div>
-                        <div class="mobile-suggested-info">
-                            <div class="mobile-suggested-details">
-                                <h3>${video.title}</h3>
-                                <div class="meta">
-                                    <span>${video.author} <i class="fa-solid fa-circle-check" style="font-size: 10px;"></i></span>
-                                    <span>${video.views} • ${video.time}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                `).join('');
-            }
+                    </div>
+                </a>
+            `;
+            const cardsHTML = suggestedVideos.map(cardHTML).join('');
+            if (desktopSuggestedContainer) desktopSuggestedContainer.innerHTML = cardsHTML;
+            if (mobileSuggestedContainer) mobileSuggestedContainer.innerHTML = cardsHTML;
         })();
 
         /* =========================================
@@ -788,6 +849,11 @@
             }
         }
 
+        function showPopup(msg) {
+            document.getElementById('popupText').textContent = msg;
+            document.getElementById('popupToggle').checked = true;
+        }
+
         function shareVideo() {
             const videoUrl = window.location.href;
             if (navigator.share) {
@@ -796,12 +862,12 @@
                     url: videoUrl
                 }).catch((error) => console.log('Error sharing', error));
             } else {
-                alert('Share link: ' + videoUrl);
+                showPopup('Share link: ' + videoUrl);
             }
         }
 
         function downloadVideo() {
-            alert('Download started... (Demo)');
+            showPopup('Download started... (Demo)');
         }
 
         function toggleMoreDropdown(event) {
@@ -811,17 +877,17 @@
         }
 
         function saveVideo() {
-            alert('Video saved to Watch Later! (Demo)');
+            showPopup('Video saved to Watch Later! (Demo)');
             document.getElementById('mobileMoreDropdown').classList.remove('active');
         }
 
         function reportVideo() {
-            alert('Video reported. (Demo)');
+            showPopup('Video reported. (Demo)');
             document.getElementById('mobileMoreDropdown').classList.remove('active');
         }
 
         function hideVideo() {
-            alert('Video hidden. (Demo)');
+            showPopup('Video hidden. (Demo)');
             document.getElementById('mobileMoreDropdown').classList.remove('active');
         }
 
@@ -955,6 +1021,19 @@
         voiceCancelBtn?.addEventListener('click', stopListening);
         voiceOverlay?.addEventListener('click', (e) => { if (e.target === voiceOverlay) stopListening(); });
     </script>
+    <!-- CSS-only message popup (alert এর বদলে) -->
+    <input type="checkbox" id="popupToggle" class="css-popup-toggle">
+    <div class="css-popup" role="dialog" aria-modal="true">
+        <label for="popupToggle" class="css-popup-backdrop"></label>
+        <div class="css-popup-card">
+            <div class="css-popup-icon"><i class="fa-solid fa-circle-info"></i></div>
+            <p class="css-popup-text" id="popupText"></p>
+            <div class="css-popup-actions">
+                <label for="popupToggle" class="css-popup-btn primary">OK</label>
+            </div>
+        </div>
+    </div>
+
     <script src="../auth.js"></script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+/* ===== Modern colorful sidebar (shared by all pages) ===== */
+aside.sidebar { background: linear-gradient(180deg, #16161f 0%, #0f0f0f 65%); gap: 2px; }
+aside.sidebar.expanded { background: linear-gradient(180deg, #1a1a26 0%, #0f0f0f 70%); }
+
+/* per-item colours */
+aside.sidebar > a:nth-of-type(1) { --c1: #3b82f6; --c2: #06b6d4; }  /* Home      */
+aside.sidebar > a:nth-of-type(2) { --c1: #ec4899; --c2: #f43f5e; }  /* Family    */
+aside.sidebar > a:nth-of-type(3) { --c1: #f59e0b; --c2: #f97316; }  /* Events    */
+aside.sidebar > a:nth-of-type(4) { --c1: #10b981; --c2: #14b8a6; }  /* Timeline  */
+aside.sidebar > a:nth-of-type(5) { --c1: #8b5cf6; --c2: #6366f1; }  /* History   */
+
+aside.sidebar a.sidebar-item,
+aside.sidebar a.nav-item {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 4px; height: auto;
+    margin: 4px 6px; padding: 8px 2px; border-radius: 16px;
+    color: #cfcfd6; text-decoration: none; font-size: 10px; font-weight: 500;
+    border: 1px solid transparent; width: auto;
+    transition: transform .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+aside.sidebar a.sidebar-item span,
+aside.sidebar a.nav-item span { display: block; font-size: 10px; line-height: 1.15; text-align: center; max-width: 100%; }
+
+/* icon tile */
+aside.sidebar a.sidebar-item i,
+aside.sidebar a.nav-item i {
+    display: grid; place-items: center; width: 38px; height: 38px; min-width: 38px;
+    border-radius: 12px; font-size: 17px; color: var(--c1);
+    background: rgba(255,255,255,.06);
+    transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+/* hover */
+aside.sidebar a.sidebar-item:hover,
+aside.sidebar a.nav-item:hover {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 16%, transparent), color-mix(in srgb, var(--c2) 8%, transparent));
+    transform: translateY(-1px); color: #fff;
+}
+aside.sidebar a.sidebar-item:hover i,
+aside.sidebar a.nav-item:hover i { background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff; transform: scale(1.06); }
+
+/* active */
+aside.sidebar a.sidebar-item.active {
+    color: #fff; font-weight: 600;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--c1) 30%, transparent), color-mix(in srgb, var(--c2) 14%, transparent));
+    border-color: color-mix(in srgb, var(--c1) 45%, transparent);
+    box-shadow: 0 6px 18px -8px var(--c1);
+}
+aside.sidebar a.sidebar-item.active i {
+    background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff;
+    box-shadow: 0 4px 12px -2px var(--c1);
+}
+
+aside.sidebar a:focus-visible { outline: 2px solid var(--c1); outline-offset: 2px; }
+
+/* expanded (wide) */
+aside.sidebar.expanded a.sidebar-item,
+aside.sidebar.expanded a.nav-item {
+    flex-direction: row; justify-content: flex-start; gap: 14px;
+    margin: 4px 10px; padding: 8px 12px; width: auto; font-size: 14px;
+}
+aside.sidebar.expanded a.sidebar-item span,
+aside.sidebar.expanded a.nav-item span { font-size: 14px; text-align: left; }
+aside.sidebar.expanded a.sidebar-item.active::before {
+    content: ""; position: absolute; left: -10px; top: 20%; bottom: 20%; width: 4px;
+    border-radius: 0 4px 4px 0; background: linear-gradient(180deg, var(--c1), var(--c2));
+}
+
+/* Family: বন্ধ অবস্থায় "Family", খোলা অবস্থায় "Family Members" */
+aside.sidebar a .lbl-full { display: none !important; }
+aside.sidebar.expanded a .lbl-full { display: block !important; }
+aside.sidebar.expanded a .lbl-short { display: none !important; }
