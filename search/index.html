@@ -102,6 +102,7 @@
         @media (max-width: 768px) {
             .header-center { display: none; }
             .header-right .avatar { display: none; }
+            .header-right .auth-box { display: none; }
             .mobile-actions { display: flex; margin-left: auto; margin-right: 8px; }
             
             /* Mobile Sidebar Behavior */
@@ -122,7 +123,7 @@
     <header>
         <div class="header-left">
             <button class="icon-btn" id="hamburger-btn"><i class="fa-solid fa-bars"></i></button>
-            <a href="index.html" class="logo"><i class="fa-brands fa-youtube"></i> YouTube</a>
+            <a href="../" class="logo"><i class="fa-brands fa-youtube"></i> YouTube</a>
         </div>
         
         <div class="header-center">
@@ -137,11 +138,11 @@
         <div class="mobile-actions">
             <button class="icon-btn" id="mobileSearchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button class="icon-btn" id="mobileVoiceSearchBtn"><i class="fa-solid fa-microphone"></i></button>
-            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User" style="margin-left: 0;">
+            <img data-auth-avatar src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User" style="margin-left: 0;">
         </div>
 
         <div class="header-right">
-            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
+            <img data-auth-avatar src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
         </div>
     </header>
 
@@ -168,7 +169,7 @@
     </div>
 
     <aside class="sidebar" id="sidebar">
-        <a href="index.html" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="../" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
         <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family</span></a>
         <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
         <a href="#" class="sidebar-item"><i class="fa-solid fa-star"></i><span>Highlights</span></a>
@@ -263,7 +264,7 @@
             }
 
             resultsContainer.innerHTML = matches.map(v => `
-                <a class="search-result" href="watch.html?v=${v.id}">
+                <a class="search-result" href="../watch/?v=${v.id}">
                     <div class="result-thumb">
                         <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="Thumb">
                         <span class="result-duration">${v.duration}</span>
@@ -292,7 +293,7 @@
 
         function goToSearch(q) {
             q = (q || '').trim();
-            if (q) window.location.href = 'search.html?q=' + encodeURIComponent(q);
+            if (q) window.location.href = '../search/?q=' + encodeURIComponent(q);
         }
 
         function renderSuggestions(value, container) {
@@ -394,5 +395,6 @@
         voiceCancelBtn?.addEventListener('click', stopListening);
         voiceOverlay?.addEventListener('click', (e) => { if (e.target === voiceOverlay) stopListening(); });
     </script>
+    <script src="../auth.js"></script>
 </body>
 </html>

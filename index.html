@@ -217,7 +217,7 @@
     <header>
         <div class="header-left">
             <button class="icon-btn" id="hamburger-btn"><i class="fa-solid fa-bars"></i></button>
-            <a href="index.html" class="logo"><i class="fa-brands fa-youtube"></i> YouTube <span class="country">BD</span></a>
+            <a href="./" class="logo"><i class="fa-brands fa-youtube"></i> YouTube <span class="country">BD</span></a>
         </div>
         
         <div class="header-center">
@@ -240,7 +240,7 @@
         <div class="header-right">
             <button class="create-btn"><i class="fa-solid fa-plus"></i> Create</button>
             <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="notif-badge">9+</span></button>
-            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
+            <img data-auth-avatar src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
         </div>
     </header>
 
@@ -377,21 +377,21 @@
         function createVideoCardHTML(video) {
             return `
                 <div class="video-card">
-                    <a href="watch.html?v=${video.id}" class="thumb-box-link" style="text-decoration:none;">
+                    <a href="watch/?v=${video.id}" class="thumb-box-link" style="text-decoration:none;">
                         <div class="thumb-box">
                             <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="Thumbnail">
                             <span class="duration">${video.duration}</span>
                         </div>
                     </a>
                     <div class="video-info">
-                        <a href="channel.html?name=${encodeURIComponent(video.avatar)}" class="avatar-link">
+                        <a href="channel/?name=${encodeURIComponent(video.avatar)}" class="avatar-link">
                             <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(video.avatar)}&background=random" alt="Avatar">
                         </a>
                         <div class="details">
-                            <a href="watch.html?v=${video.id}" style="text-decoration:none; color:inherit;">
+                            <a href="watch/?v=${video.id}" style="text-decoration:none; color:inherit;">
                                 <h3>${video.title}</h3>
                             </a>
-                            <a href="channel.html?name=${encodeURIComponent(video.avatar)}" class="channel-link">
+                            <a href="channel/?name=${encodeURIComponent(video.avatar)}" class="channel-link">
                                 ${video.author} <i class="fa-solid fa-circle-check" style="font-size:12px; color:gray;"></i>
                             </a>
                             <p>${video.views} • ${video.time}</p>
@@ -535,7 +535,7 @@
         ];
         function goToSearch(query) {
             const q = (query || '').trim();
-            if (q) window.location.href = 'search.html?q=' + encodeURIComponent(q);
+            if (q) window.location.href = 'search/?q=' + encodeURIComponent(q);
         }
 
         const desktopSearchInput = document.getElementById('desktopSearchInput');
@@ -647,5 +647,6 @@
         voiceCancelBtn?.addEventListener('click', stopListening);
         voiceOverlay?.addEventListener('click', (e) => { if (e.target === voiceOverlay) stopListening(); });
     </script>
+    <script src="auth.js"></script>
 </body>
 </html>

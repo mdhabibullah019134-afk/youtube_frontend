@@ -162,19 +162,19 @@
     <header>
         <div class="header-left">
             <button class="icon-btn" id="hamburger-btn"><i class="fa-solid fa-bars"></i></button>
-            <a href="index.html" class="logo"><i class="fa-brands fa-youtube"></i> YouTube <span class="country">BD</span></a>
+            <a href="../" class="logo"><i class="fa-brands fa-youtube"></i> YouTube <span class="country">BD</span></a>
         </div>
         <div class="header-center">
             <div class="search-box">
                 <input type="text" placeholder="Search" id="headerSearchInput">
-                <button onclick="window.location.href='search.html?q=' + document.getElementById('headerSearchInput').value"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button onclick="window.location.href='../search/?q=' + encodeURIComponent(document.getElementById('headerSearchInput').value.trim())"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <button class="icon-btn"><i class="fa-solid fa-microphone"></i></button>
         </div>
         <div class="header-right">
             <button class="icon-btn"><i class="fa-solid fa-plus"></i></button>
             <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
-            <img src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
+            <img data-auth-avatar src="https://ui-avatars.com/api/?name=User&background=random" class="avatar" alt="User">
         </div>
     </header>
 
@@ -182,7 +182,7 @@
         
         <!-- Sidebar (Same as index.html) -->
         <aside class="sidebar" id="sidebar">
-            <a href="index.html" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="../" class="sidebar-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
             <a href="#" class="sidebar-item"><i class="fa-solid fa-users"></i><span>Family Members</span></a>
             <a href="#" class="sidebar-item"><i class="fa-solid fa-calendar-days"></i><span>Events</span></a>
             <a href="#" class="sidebar-item"><i class="fa-solid fa-timeline"></i><span>Timeline</span></a>
@@ -308,7 +308,7 @@
         // ==========================================
         function renderVideos() {
             document.getElementById('videosGrid').innerHTML = dummyVideos.map(v => `
-                <a href="watch.html?v=${v.id}" class="video-card">
+                <a href="../watch/?v=${v.id}" class="video-card">
                     <div class="thumb-box">
                         <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="Thumb">
                         <span class="duration">${v.duration}</span>
@@ -323,7 +323,7 @@
 
         function renderShorts() {
             document.getElementById('shortsGrid').innerHTML = dummyShorts.map(s => `
-                <a href="watch.html?v=${s.id}" class="short-card">
+                <a href="../watch/?v=${s.id}" class="short-card">
                     <div class="short-thumb">
                         <img src="https://i.ytimg.com/vi/${s.id}/hqdefault.jpg" alt="Short">
                     </div>
@@ -407,5 +407,6 @@
             overlay.classList.remove('active');
         }
     </script>
+    <script src="../auth.js"></script>
 </body>
 </html>
